@@ -1,3 +1,9 @@
+-- =========================================================
+-- INFINITY HUB // UPDATED GUI + FULL FUNCTIONALITY
+-- Run in executor or Command Bar
+-- =========================================================
+
+-- Safe cleanup across environments
 pcall(function()
     if _G.InfinityGui and typeof(_G.InfinityGui) == "Instance" then
         _G.InfinityGui:Destroy()
@@ -5,140 +11,147 @@ pcall(function()
 end)
 pcall(function()
     if gethui then
-        local old = gethui():FindFirstChild("Gui")
+        local old = gethui():FindFirstChild("InfinityHubGui") or gethui():FindFirstChild("Gui")
         if old then old:Destroy() end
     end
 end)
 pcall(function()
     local cg = game:GetService("CoreGui")
-    local old = cg:FindFirstChild("Gui")
+    local old = cg:FindFirstChild("InfinityHubGui") or cg:FindFirstChild("Gui")
     if old then old:Destroy() end
 end)
 local localPlayer = game:GetService("Players").LocalPlayer
 pcall(function()
     if localPlayer and localPlayer:FindFirstChild("PlayerGui") then
-        local old = localPlayer.PlayerGui:FindFirstChild("Gui")
+        local old = localPlayer.PlayerGui:FindFirstChild("InfinityHubGui") or localPlayer.PlayerGui:FindFirstChild("Gui")
         if old then old:Destroy() end
     end
 end)
 
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+
+local clickSound = SoundService:FindFirstChild("Click")
+local hoverSound = SoundService:FindFirstChild("Hover")
 
 -- Instances:
-local Gui = Instance.new("ScreenGui")
+
+local InfinityHubGui = Instance.new("ScreenGui")
+local FPS_Display = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local StatusDot = Instance.new("Frame")
+local UICorner_2 = Instance.new("UICorner")
+local FpsLabel = Instance.new("TextLabel")
+local ToggleButton = Instance.new("ImageButton")
 local Main = Instance.new("Frame")
+local UIGradient = Instance.new("UIGradient")
 local FloatingDots = Instance.new("Frame")
 local Close = Instance.new("ImageButton")
 local DragButton = Instance.new("Frame")
 local DragIcon = Instance.new("ImageLabel")
 local Logo = Instance.new("ImageLabel")
-local TextLabel = Instance.new("TextLabel")
+local TitleText = Instance.new("TextLabel")
+local HeaderLine = Instance.new("TextLabel")
+local UICorner_3 = Instance.new("UICorner")
 local Home = Instance.new("TextButton")
 local Line = Instance.new("TextLabel")
 local HFrame = Instance.new("Frame")
+local Welcome = Instance.new("ImageLabel")
+local UICorner_4 = Instance.new("UICorner")
+local WelcomeText = Instance.new("TextLabel")
+local PlayerName = Instance.new("TextLabel")
 local Credits = Instance.new("TextLabel")
 local Liasspai = Instance.new("ImageLabel")
-local UICorner = Instance.new("UICorner")
+local UICorner_5 = Instance.new("UICorner")
 local Name = Instance.new("TextLabel")
 local Role = Instance.new("TextLabel")
-local ImageLabel = Instance.new("ImageLabel")
-local UICorner_2 = Instance.new("UICorner")
+local Scripter = Instance.new("ImageLabel")
+local UICorner_6 = Instance.new("UICorner")
 local Name_2 = Instance.new("TextLabel")
 local Role_2 = Instance.new("TextLabel")
 local Support = Instance.new("TextLabel")
-local UICorner_3 = Instance.new("UICorner")
-local Discord = Instance.new("TextButton")
-local Icon = Instance.new("ImageLabel")
-local UICorner_4 = Instance.new("UICorner")
-local TextLabel_2 = Instance.new("TextLabel")
-local Special = Instance.new("TextLabel")
-local Someone = Instance.new("ImageLabel")
-local UICorner_5 = Instance.new("UICorner")
-local Name_3 = Instance.new("TextLabel")
-local Welcome = Instance.new("ImageLabel")
-local UICorner_6 = Instance.new("UICorner")
-local Welcome_2 = Instance.new("TextLabel")
-local PlayerName = Instance.new("TextLabel")
 local Game = Instance.new("TextButton")
 local Line_2 = Instance.new("TextLabel")
 local GFrame = Instance.new("Frame")
 local Search = Instance.new("TextBox")
+local SearchIcon = Instance.new("ImageLabel")
+local Catecorys = Instance.new("ImageButton")
 local UICorner_7 = Instance.new("UICorner")
-local ImageLabel_2 = Instance.new("ImageLabel")
-local UICorner_8 = Instance.new("UICorner")
-local ServerBtn = Instance.new("TextButton")
+local ScrollingFrame = Instance.new("ScrollingFrame")
+local Player = Instance.new("TextLabel")
 local Line_3 = Instance.new("TextLabel")
+local UIGradient_2 = Instance.new("UIGradient")
+local UICorner_8 = Instance.new("UICorner")
+local Server = Instance.new("TextButton")
+local Line_4 = Instance.new("TextLabel")
 local ServerFrame = Instance.new("Frame")
 local GameCard = Instance.new("Frame")
-local GameCardStroke = Instance.new("UIStroke")
-local GameHeader = Instance.new("TextLabel")
-local GameNameLabel = Instance.new("TextLabel")
-local PlaceInfoLabel = Instance.new("TextLabel")
+local Header = Instance.new("TextLabel")
 local SupportBadge = Instance.new("Frame")
-local SupportBadgeStroke = Instance.new("UIStroke")
-local SupportBadgeText = Instance.new("TextLabel")
-local SubtitleLabel = Instance.new("TextLabel")
+local Text = Instance.new("TextLabel")
+local GameName = Instance.new("TextLabel")
+local PlaceInfo = Instance.new("TextLabel")
+local Subtitle = Instance.new("TextLabel")
 local StatsCard = Instance.new("Frame")
-local StatsCardStroke = Instance.new("UIStroke")
-local StatsHeader = Instance.new("TextLabel")
-local PlayersLabel = Instance.new("TextLabel")
-local PingLabel = Instance.new("TextLabel")
-local UptimeLabel = Instance.new("TextLabel")
-local JobIdLabel = Instance.new("TextLabel")
+local Header_2 = Instance.new("TextLabel")
+local Players_Lbl = Instance.new("TextLabel")
+local Ping = Instance.new("TextLabel")
+local Uptime = Instance.new("TextLabel")
+local JobId = Instance.new("TextLabel")
 local CopyJobBtn = Instance.new("TextButton")
 local ActionsCard = Instance.new("Frame")
-local ActionsCardStroke = Instance.new("UIStroke")
-local ActionsHeader = Instance.new("TextLabel")
+local Header_3 = Instance.new("TextLabel")
 local RejoinBtn = Instance.new("TextButton")
 local ServerHopBtn = Instance.new("TextButton")
-local ServerHopBtnStroke = Instance.new("UIStroke")
 local Settings = Instance.new("TextButton")
+local Line_5 = Instance.new("TextLabel")
 local SFrame = Instance.new("Frame")
 local Volume = Instance.new("TextLabel")
 local UiSounds = Instance.new("TextLabel")
-local DragCount = Instance.new("TextLabel")
 local DragBackground = Instance.new("TextLabel")
 local UICorner_9 = Instance.new("UICorner")
 local Drag = Instance.new("TextLabel")
 local UICorner_10 = Instance.new("UICorner")
-local Line1 = Instance.new("TextLabel")
-local UIGradient = Instance.new("UIGradient")
-local Line2 = Instance.new("TextLabel")
-local UIGradient_2 = Instance.new("UIGradient")
+local DragCount = Instance.new("TextLabel")
 local UI = Instance.new("TextLabel")
-local Dots = Instance.new("TextLabel")
+local DOTS = Instance.new("TextLabel")
 local Box = Instance.new("TextButton")
 local On = Instance.new("TextButton")
 local Check = Instance.new("ImageLabel")
-local Info = Instance.new("Frame")
-local OnOff = Instance.new("TextLabel")
-local Name_4 = Instance.new("TextLabel")
-local Information = Instance.new("TextLabel")
-local Line1_2 = Instance.new("TextLabel")
-local UIGradient_3 = Instance.new("UIGradient")
-local Line2_2 = Instance.new("TextLabel")
-local UIGradient_4 = Instance.new("UIGradient")
-local Gradient = Instance.new("TextLabel")
+local GRADIENT = Instance.new("TextLabel")
 local Box_2 = Instance.new("TextButton")
 local On_2 = Instance.new("TextButton")
 local Check_2 = Instance.new("ImageLabel")
-local Info_2 = Instance.new("Frame")
-local OnOff_2 = Instance.new("TextLabel")
-local Name_5 = Instance.new("TextLabel")
-local Information_2 = Instance.new("TextLabel")
-local Shadow = Instance.new("TextLabel")
+local SHADOW = Instance.new("TextLabel")
 local Box_3 = Instance.new("TextButton")
 local On_3 = Instance.new("TextButton")
 local Check_3 = Instance.new("ImageLabel")
-local Info_3 = Instance.new("Frame")
-local OnOff_3 = Instance.new("TextLabel")
-local Name_6 = Instance.new("TextLabel")
-local Information_3 = Instance.new("TextLabel")
-local Line_4 = Instance.new("TextLabel")
-local Line_5 = Instance.new("TextLabel")
+local UnloadRow = Instance.new("TextLabel")
+local UnloadBtn = Instance.new("TextButton")
 local UICorner_11 = Instance.new("UICorner")
-local UIGradient_5 = Instance.new("UIGradient")
+local SupportHOME = Instance.new("ScrollingFrame")
+local Github = Instance.new("Frame")
+local UICorner_12 = Instance.new("UICorner")
+local Name_3 = Instance.new("TextLabel")
+local Logo_2 = Instance.new("ImageLabel")
+local UICorner_13 = Instance.new("UICorner")
+local Text_2 = Instance.new("TextLabel")
+local SubText = Instance.new("TextLabel")
+local Discord = Instance.new("Frame")
+local UICorner_14 = Instance.new("UICorner")
+local Name_4 = Instance.new("TextLabel")
+local Logo_3 = Instance.new("ImageLabel")
+local UICorner_15 = Instance.new("UICorner")
+local Text_3 = Instance.new("TextLabel")
+local SubText_2 = Instance.new("TextLabel")
 
--- Discord Notification Popup Window (Parented to Main so it stays centered inside the GUI)
+-- Notification Popup Window (Parented to Main so it stays centered inside GUI)
 local DiscordPopup = Instance.new("Frame")
 local DiscordPopupCorner = Instance.new("UICorner")
 local DiscordPopupStroke = Instance.new("UIStroke")
@@ -150,85 +163,108 @@ local PopupIcon = Instance.new("ImageLabel")
 local PopupMsg = Instance.new("TextLabel")
 local PopupLink = Instance.new("TextLabel")
 
--- Unload GUI Option (Settings Tab)
-local Unload = Instance.new("TextLabel")
-local UnloadBtn = Instance.new("TextButton")
-local UnloadBtnCorner = Instance.new("UICorner")
-local UnloadBtnStroke = Instance.new("UIStroke")
-local Info_4 = Instance.new("Frame")
-local OnOff_4 = Instance.new("TextLabel")
-local Name_7 = Instance.new("TextLabel")
-local Information_4 = Instance.new("TextLabel")
-
--- FPS Counter Display (Top Right of Screen)
-local FpsGui = Instance.new("Frame")
-local FpsCorner = Instance.new("UICorner")
-local FpsStroke = Instance.new("UIStroke")
-local FpsDot = Instance.new("Frame")
-local FpsDotCorner = Instance.new("UICorner")
-local FpsLabel = Instance.new("TextLabel")
-
--- Floating Toggle GUI Button (Draggable Infinity figure 8)
-local ToggleButton = Instance.new("ImageButton")
-
--- Global Mode & Game GUI References
-local activeGuiMode = "Hub"
-
 --Properties:
 
-Gui.Name = "Gui"
-Gui.ResetOnSpawn = false
-Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-Gui.IgnoreGuiInset = true
+InfinityHubGui.Name = "InfinityHubGui"
+InfinityHubGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+InfinityHubGui.ResetOnSpawn = false
+InfinityHubGui.IgnoreGuiInset = true
 
 local success, parent = pcall(function()
     return (gethui and gethui()) or game:GetService("CoreGui")
 end)
 if success and parent then
-    Gui.Parent = parent
+    InfinityHubGui.Parent = parent
 else
-    Gui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+    if localPlayer then
+        InfinityHubGui.Parent = localPlayer:WaitForChild("PlayerGui")
+    else
+        InfinityHubGui.Parent = game:GetService("StarterGui")
+    end
 end
 
-_G.InfinityGui = Gui
-shared.InfinityGui = Gui
+_G.InfinityGui = InfinityHubGui
+shared.InfinityGui = InfinityHubGui
+
+FPS_Display.Name = "FPS_Display"
+FPS_Display.Parent = InfinityHubGui
+FPS_Display.AnchorPoint = Vector2.new(1, 0)
+FPS_Display.BackgroundColor3 = Color3.fromRGB(44, 46, 50)
+FPS_Display.BorderSizePixel = 0
+FPS_Display.Position = UDim2.new(1, -6, 0, 4)
+FPS_Display.Size = UDim2.new(0, 88, 0, 24)
+FPS_Display.ZIndex = 300
+
+UICorner.CornerRadius = UDim.new(0, 5)
+UICorner.Parent = FPS_Display
+
+StatusDot.Name = "StatusDot"
+StatusDot.Parent = FPS_Display
+StatusDot.BackgroundColor3 = Color3.fromRGB(0, 255, 140)
+StatusDot.BorderSizePixel = 0
+StatusDot.Position = UDim2.new(0, 8, 0.5, -3)
+StatusDot.Size = UDim2.new(0, 7, 0, 7)
+StatusDot.ZIndex = 301
+
+UICorner_2.CornerRadius = UDim.new(1, 0)
+UICorner_2.Parent = StatusDot
+
+FpsLabel.Name = "FpsLabel"
+FpsLabel.Parent = FPS_Display
+FpsLabel.BackgroundTransparency = 1.000
+FpsLabel.Position = UDim2.new(0, 21, 0, 0)
+FpsLabel.Size = UDim2.new(1, -23, 1, 0)
+FpsLabel.ZIndex = 301
+FpsLabel.Font = Enum.Font.GothamBold
+FpsLabel.Text = "FPS: 60"
+FpsLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
+FpsLabel.TextSize = 12.000
+FpsLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = InfinityHubGui
+ToggleButton.AnchorPoint = Vector2.new(0.5, 0)
+ToggleButton.BackgroundTransparency = 1.000
+ToggleButton.BorderSizePixel = 0
+ToggleButton.Position = UDim2.new(0.5, 0, 0, 8)
+ToggleButton.Size = UDim2.new(0, 100, 0, 56)
+ToggleButton.ZIndex = 400
+ToggleButton.Image = "rbxassetid://17894477503"
+ToggleButton.ScaleType = Enum.ScaleType.Fit
+ToggleButton.Active = true
 
 Main.Name = "Main"
-Main.Parent = Gui
+Main.Parent = InfinityHubGui
 Main.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Main.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Main.BorderSizePixel = 0
-Main.Position = UDim2.new(0.380322784, 0, 0.220715895, 0)
+Main.Position = UDim2.new(0.444438607, 0, 0.251117378, 0)
 Main.Size = UDim2.new(0, 399, 0, 499)
 Main.Visible = true
 
--- Background FloatingDots container (stays behind buttons)
+UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(30, 28, 26)), ColorSequenceKeypoint.new(0.64, Color3.fromRGB(255, 255, 254)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
+UIGradient.Rotation = 90
+UIGradient.Parent = Main
+
 FloatingDots.Name = "FloatingDots"
 FloatingDots.Parent = Main
-FloatingDots.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 FloatingDots.BackgroundTransparency = 1.000
 FloatingDots.BorderSizePixel = 0
 FloatingDots.ClipsDescendants = true
 FloatingDots.Size = UDim2.new(1, 0, 1, 0)
-FloatingDots.Active = false
-FloatingDots.ZIndex = 1
 
 Close.Name = "Close"
 Close.Parent = Main
 Close.AnchorPoint = Vector2.new(1, 0.5)
 Close.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-Close.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Close.BorderSizePixel = 0
 Close.Position = UDim2.new(0.982500017, 0, 0.0439999998, 0)
 Close.Size = UDim2.new(0, 30, 0, 30)
-Close.AutoButtonColor = false
 Close.Image = "rbxassetid://14219436180"
 
 DragButton.Name = "DragButton"
 DragButton.Parent = Main
 DragButton.AnchorPoint = Vector2.new(1, 0.5)
 DragButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-DragButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 DragButton.BorderSizePixel = 0
 DragButton.Position = UDim2.new(0.888000011, 0, 0.0439999998, 0)
 DragButton.Size = UDim2.new(0, 30, 0, 30)
@@ -236,9 +272,7 @@ DragButton.Size = UDim2.new(0, 30, 0, 30)
 DragIcon.Name = "DragIcon"
 DragIcon.Parent = DragButton
 DragIcon.AnchorPoint = Vector2.new(1, 0.5)
-DragIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 DragIcon.BackgroundTransparency = 1.000
-DragIcon.BorderColor3 = Color3.fromRGB(0, 0, 0)
 DragIcon.BorderSizePixel = 0
 DragIcon.Position = UDim2.new(1, 0, 0.5, 0)
 DragIcon.Size = UDim2.new(0, 30, 0, 30)
@@ -246,426 +280,417 @@ DragIcon.Image = "rbxassetid://94225529221725"
 
 Logo.Name = "Logo"
 Logo.Parent = Main
-Logo.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Logo.BackgroundTransparency = 1.000
-Logo.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Logo.BorderSizePixel = 0
-Logo.Position = UDim2.new(0.0200000275, 0, 0, 0)
+Logo.Position = UDim2.new(0.0199999996, 0, 0, 0)
 Logo.Size = UDim2.new(0, 60, 0, 47)
 Logo.Image = "rbxassetid://17894477503"
 
-TextLabel.Parent = Logo
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1.000
-TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel.BorderSizePixel = 0
-TextLabel.Position = UDim2.new(0.783333361, 0, 0.25, 0)
-TextLabel.Size = UDim2.new(0, 123, 0, 22)
-TextLabel.Font = Enum.Font.GothamBold
-TextLabel.Text = "INFINITY"
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
-TextLabel.TextWrapped = true
+TitleText.Name = "TitleText"
+TitleText.Parent = Logo
+TitleText.BackgroundTransparency = 1.000
+TitleText.BorderSizePixel = 0
+TitleText.Position = UDim2.new(0.782999992, 0, 0.25, 0)
+TitleText.Size = UDim2.new(0, 123, 0, 22)
+TitleText.Font = Enum.Font.GothamBold
+TitleText.Text = "INFINITY"
+TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleText.TextScaled = true
+TitleText.TextWrapped = true
+
+HeaderLine.Name = "HeaderLine"
+HeaderLine.Parent = Main
+HeaderLine.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
+HeaderLine.BorderSizePixel = 0
+HeaderLine.Position = UDim2.new(0.0299999993, 0, 0.175999999, 0)
+HeaderLine.Size = UDim2.new(0, 375, 0, 5)
+HeaderLine.Text = ""
+
+UICorner_3.CornerRadius = UDim.new(0, 25)
+UICorner_3.Parent = HeaderLine
 
 Home.Name = "Home"
 Home.Parent = Main
-Home.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Home.BackgroundTransparency = 1.000
-Home.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Home.BorderSizePixel = 0
-Home.Position = UDim2.new(0.0175438598, 0, 0.118000008, 0)
+Home.Position = UDim2.new(0.0175000001, 0, 0.118000001, 0)
 Home.Size = UDim2.new(0, 93, 0, 18)
 Home.Font = Enum.Font.GothamBold
 Home.Text = "HOME"
 Home.TextColor3 = Color3.fromRGB(0, 174, 255)
 Home.TextScaled = true
-Home.TextSize = 14.000
 Home.TextWrapped = true
 
 Line.Name = "Line"
 Line.Parent = Home
 Line.BackgroundColor3 = Color3.fromRGB(0, 174, 255)
-Line.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Line.BorderSizePixel = 0
 Line.Position = UDim2.new(0.0939999968, 0, 1.10000002, 0)
 Line.Size = UDim2.new(0, 75, 0, 1)
-Line.Font = Enum.Font.SourceSans
+Line.Visible = true
 Line.Text = ""
-Line.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line.TextSize = 14.000
 
 HFrame.Name = "HFrame"
 HFrame.Parent = Home
-HFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 HFrame.BackgroundTransparency = 1.000
-HFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 HFrame.BorderSizePixel = 0
-HFrame.Position = UDim2.new(0, 0, 5.27778196, 0)
+HFrame.Position = UDim2.new(0, 0, 5.27699995, 0)
 HFrame.Size = UDim2.new(0, 375, 0, 381)
+HFrame.Visible = true
+
+Welcome.Name = "Welcome"
+Welcome.Parent = HFrame
+Welcome.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+Welcome.BorderSizePixel = 0
+Welcome.Position = UDim2.new(0.0266666673, 0, -0.0988173634, 0)
+Welcome.Size = UDim2.new(0, 33, 0, 33)
+Welcome.Image = "rbxthumb://type=AvatarHeadShot&id=" .. (localPlayer and tostring(localPlayer.UserId) or "1") .. "&w=150&h=150"
+
+UICorner_4.CornerRadius = UDim.new(0, 50)
+UICorner_4.Parent = Welcome
+
+WelcomeText.Name = "WelcomeText"
+WelcomeText.Parent = Welcome
+WelcomeText.BackgroundTransparency = 1.000
+WelcomeText.Position = UDim2.new(1.34998858, 0, 0.00371019775, 0)
+WelcomeText.Size = UDim2.new(0, 87, 0, 17)
+WelcomeText.Font = Enum.Font.GothamBold
+WelcomeText.Text = "WELCOME"
+WelcomeText.TextColor3 = Color3.fromRGB(255, 255, 255)
+WelcomeText.TextScaled = true
+WelcomeText.TextWrapped = true
+
+PlayerName.Name = "PlayerName"
+PlayerName.Parent = Welcome
+PlayerName.BackgroundTransparency = 1.000
+PlayerName.Position = UDim2.new(1.34998858, 0, 0.470621735, 0)
+PlayerName.Size = UDim2.new(0, 87, 0, 17)
+PlayerName.Font = Enum.Font.SourceSansBold
+PlayerName.Text = localPlayer and localPlayer.DisplayName or "Developer"
+PlayerName.TextColor3 = Color3.fromRGB(0, 174, 255)
+PlayerName.TextScaled = true
+PlayerName.TextWrapped = true
 
 Credits.Name = "Credits"
 Credits.Parent = HFrame
-Credits.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
 Credits.BackgroundTransparency = 1.000
-Credits.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Credits.BorderSizePixel = 0
-Credits.Position = UDim2.new(0.0133333337, 0, -0.0524934381, 0)
+Credits.Position = UDim2.new(0.0183333326, 0, 0.0214907825, 0)
 Credits.Size = UDim2.new(0, 99, 0, 50)
 Credits.Font = Enum.Font.GothamBold
 Credits.Text = "CREDITS"
 Credits.TextColor3 = Color3.fromRGB(255, 255, 255)
 Credits.TextSize = 25.000
-Credits.TextWrapped = true
 
 Liasspai.Name = "Liasspai"
 Liasspai.Parent = HFrame
 Liasspai.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
-Liasspai.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Liasspai.BorderSizePixel = 0
-Liasspai.Position = UDim2.new(0.0399999991, 0, 0.0787401572, 0)
+Liasspai.Position = UDim2.new(0.0399999991, 0, 0.143616766, 0)
 Liasspai.Size = UDim2.new(0, 30, 0, 30)
 Liasspai.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=10895916254&width=420&height=420&format=png"
 
-UICorner.CornerRadius = UDim.new(0, 50)
-UICorner.Parent = Liasspai
+UICorner_5.CornerRadius = UDim.new(0, 50)
+UICorner_5.Parent = Liasspai
 
 Name.Name = "Name"
 Name.Parent = Liasspai
-Name.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Name.BackgroundTransparency = 1.000
-Name.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name.BorderSizePixel = 0
-Name.Position = UDim2.new(1.5, 0, 0.13333334, 0)
+Name.Position = UDim2.new(1.5, 0, 0.133000001, 0)
 Name.Size = UDim2.new(0, 78, 0, 13)
 Name.Font = Enum.Font.GothamBold
 Name.Text = "LIASSPAI"
-Name.TextColor3 = Color3.fromRGB(59, 59, 59)
+Name.TextColor3 = Color3.fromRGB(200, 200, 200)
 Name.TextScaled = true
-Name.TextSize = 14.000
 Name.TextWrapped = true
 
 Role.Name = "Role"
 Role.Parent = Liasspai
-Role.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Role.BackgroundTransparency = 1.000
-Role.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Role.BorderSizePixel = 0
-Role.Position = UDim2.new(1.5, 0, 0.566666663, 0)
+Role.Position = UDim2.new(1.5, 0, 0.565999985, 0)
 Role.Size = UDim2.new(0, 78, 0, 13)
 Role.Font = Enum.Font.GothamBold
 Role.Text = "GUI/DESIGNER"
-Role.TextColor3 = Color3.fromRGB(59, 59, 59)
+Role.TextColor3 = Color3.fromRGB(120, 120, 120)
 Role.TextScaled = true
-Role.TextSize = 14.000
 Role.TextWrapped = true
 
-ImageLabel.Name = "---"
-ImageLabel.Parent = HFrame
-ImageLabel.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
-ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ImageLabel.BorderSizePixel = 0
-ImageLabel.Position = UDim2.new(0.0399999991, 0, 0.194225729, 0)
-ImageLabel.Size = UDim2.new(0, 30, 0, 30)
-ImageLabel.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=10895916254&width=420&height=420&format=png"
+Scripter.Name = "Scripter"
+Scripter.Parent = HFrame
+Scripter.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
+Scripter.BorderSizePixel = 0
+Scripter.Position = UDim2.new(0.0399999991, 0, 0.259616792, 0)
+Scripter.Size = UDim2.new(0, 30, 0, 30)
+Scripter.Image = "rbxthumb://type=AvatarHeadShot&id=819458846&w=150&h=150"
 
-UICorner_2.CornerRadius = UDim.new(0, 50)
-UICorner_2.Parent = ImageLabel
+UICorner_6.CornerRadius = UDim.new(0, 50)
+UICorner_6.Parent = Scripter
 
 Name_2.Name = "Name"
-Name_2.Parent = ImageLabel
-Name_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Name_2.Parent = Scripter
 Name_2.BackgroundTransparency = 1.000
-Name_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name_2.BorderSizePixel = 0
-Name_2.Position = UDim2.new(1.5, 0, 0.13333334, 0)
-Name_2.Size = UDim2.new(0, 78, 0, 13)
+Name_2.Position = UDim2.new(1.36666667, 0, 0, 0)
+Name_2.Size = UDim2.new(0, 86, 0, 16)
 Name_2.Font = Enum.Font.GothamBold
-Name_2.Text = "???"
-Name_2.TextColor3 = Color3.fromRGB(59, 59, 59)
+Name_2.Text = "TRIPNATION416"
+Name_2.TextColor3 = Color3.fromRGB(200, 200, 200)
 Name_2.TextScaled = true
-Name_2.TextSize = 14.000
 Name_2.TextWrapped = true
 
 Role_2.Name = "Role"
-Role_2.Parent = ImageLabel
-Role_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Role_2.Parent = Scripter
 Role_2.BackgroundTransparency = 1.000
-Role_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Role_2.BorderSizePixel = 0
-Role_2.Position = UDim2.new(1.5, 0, 0.566666663, 0)
+Role_2.Position = UDim2.new(1.5, 0, 0.565999985, 0)
 Role_2.Size = UDim2.new(0, 78, 0, 13)
 Role_2.Font = Enum.Font.GothamBold
 Role_2.Text = "SCRIPTER"
-Role_2.TextColor3 = Color3.fromRGB(59, 59, 59)
+Role_2.TextColor3 = Color3.fromRGB(120, 120, 120)
 Role_2.TextScaled = true
-Role_2.TextSize = 14.000
 Role_2.TextWrapped = true
 
 Support.Name = "Support"
 Support.Parent = HFrame
-Support.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
-Support.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Support.BorderSizePixel = 0
-Support.Position = UDim2.new(0, 0, 0.540682316, 0)
-Support.Size = UDim2.new(0, 228, 0, 50)
+Support.BackgroundTransparency = 1.000
+Support.Position = UDim2.new(0.0106666666, 0, 0.324776947, 0)
+Support.Size = UDim2.new(0, 265, 0, 50)
 Support.Font = Enum.Font.GothamBold
-Support.Text = "WANT TO SUPPORT US?"
+Support.Text = "SUPPORT INFINITY SCRIPTS!"
 Support.TextColor3 = Color3.fromRGB(255, 255, 255)
 Support.TextSize = 20.000
-Support.TextWrapped = true
 
-UICorner_3.Parent = Support
+SupportHOME.Name = "Support (HOME)"
+SupportHOME.Parent = Main
+SupportHOME.Active = true
+SupportHOME.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SupportHOME.BackgroundTransparency = 1.000
+SupportHOME.BorderSizePixel = 0
+SupportHOME.Position = UDim2.new(-0.00249096868, 0, 0.633707345, 0)
+SupportHOME.Size = UDim2.new(0, 399, 0, 182)
+SupportHOME.Visible = true
+SupportHOME.ScrollBarThickness = 2
 
-Discord.Name = "Discord"
-Discord.Parent = Support
-Discord.BackgroundColor3 = Color3.fromRGB(102, 102, 102)
-Discord.BackgroundTransparency = 1.000
-Discord.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Discord.BorderSizePixel = 0
-Discord.Position = UDim2.new(-0.0614035092, 0, 1, 0)
-Discord.Size = UDim2.new(0, 200, 0, 50)
-Discord.AutoButtonColor = false
-Discord.Font = Enum.Font.Gotham
-Discord.Text = "DISCORD"
-Discord.TextColor3 = Color3.fromRGB(255, 255, 255)
-Discord.TextSize = 25.000
+Github.Name = "Github"
+Github.Parent = SupportHOME
+Github.BackgroundColor3 = Color3.fromRGB(36, 38, 44)
+Github.BorderSizePixel = 0
+Github.Position = UDim2.new(0.048, 0, 0, 77)
+Github.Size = UDim2.new(0, 360, 0, 65)
 
-Icon.Name = "Icon"
-Icon.Parent = Discord
-Icon.Active = false
-Icon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Icon.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Icon.BorderSizePixel = 0
-Icon.Position = UDim2.new(0.0949999988, 0, 0.239999995, 0)
-Icon.Size = UDim2.new(0, 25, 0, 25)
-Icon.Image = "rbxassetid://10367063073"
-
-UICorner_4.Parent = Icon
-
-TextLabel_2.Parent = Discord
-TextLabel_2.Active = false
-TextLabel_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel_2.BackgroundTransparency = 1.000
-TextLabel_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TextLabel_2.BorderSizePixel = 0
-TextLabel_2.Position = UDim2.new(0.109999999, 0, 0.479999989, 0)
-TextLabel_2.Size = UDim2.new(0, 200, 0, 50)
-TextLabel_2.Font = Enum.Font.GothamBold
-TextLabel_2.Text = "CLICK TO COPY DISCORD INVITE"
-TextLabel_2.TextColor3 = Color3.fromRGB(140, 140, 140)
-TextLabel_2.TextSize = 14.000
-
-Special.Name = "Special"
-Special.Parent = HFrame
-Special.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
-Special.BackgroundTransparency = 1.000
-Special.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Special.BorderSizePixel = 0
-Special.Position = UDim2.new(0, 0, 0.272965878, 0)
-Special.Size = UDim2.new(0, 240, 0, 50)
-Special.Font = Enum.Font.GothamBold
-Special.Text = "SPECIAL THANKS TO"
-Special.TextColor3 = Color3.fromRGB(255, 255, 255)
-Special.TextSize = 25.000
-Special.TextWrapped = true
-
-Someone.Name = "Someone"
-Someone.Parent = HFrame
-Someone.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
-Someone.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Someone.BorderSizePixel = 0
-Someone.Position = UDim2.new(0.0399999991, 0, 0.404199481, 0)
-Someone.Size = UDim2.new(0, 30, 0, 30)
-Someone.Image = "rbxthumb://type=AvatarHeadShot&id=819458846&w=150&h=150"
-
-UICorner_5.CornerRadius = UDim.new(0, 50)
-UICorner_5.Parent = Someone
+UICorner_12.CornerRadius = UDim.new(0, 6)
+UICorner_12.Parent = Github
 
 Name_3.Name = "Name"
-Name_3.Parent = Someone
-Name_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Name_3.Parent = Github
 Name_3.BackgroundTransparency = 1.000
-Name_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name_3.BorderSizePixel = 0
-Name_3.Position = UDim2.new(1.79999995, 0, 0.233333334, 0)
-Name_3.Size = UDim2.new(0, 110, 0, 15)
+Name_3.Position = UDim2.new(0, 35, 0, 6)
+Name_3.Size = UDim2.new(0, 114, 0, 18)
 Name_3.Font = Enum.Font.GothamBold
-Name_3.Text = "TripNation416"
-Name_3.TextColor3 = Color3.fromRGB(200, 200, 200)
-Name_3.TextScaled = true
-Name_3.TextSize = 14.000
-Name_3.TextWrapped = true
+Name_3.Text = "GITHUB"
+Name_3.TextColor3 = Color3.fromRGB(242, 242, 242)
+Name_3.TextSize = 13.000
+Name_3.TextXAlignment = Enum.TextXAlignment.Left
 
-Welcome.Name = "Welcome"
-Welcome.Parent = HFrame
-Welcome.BackgroundColor3 = Color3.fromRGB(59, 59, 59)
-Welcome.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Welcome.BorderSizePixel = 0
-Welcome.Position = UDim2.new(0.0320000015, 0, -0.123359583, 0)
-Welcome.Size = UDim2.new(0, 25, 0, 25)
+Logo_2.Name = "Logo"
+Logo_2.Parent = Github
+Logo_2.BackgroundTransparency = 1.000
+Logo_2.Position = UDim2.new(0, 8, 0, 7)
+Logo_2.Size = UDim2.new(0, 20, 0, 20)
+Logo_2.Image = "rbxassetid://102816031861909"
 
-UICorner_6.CornerRadius = UDim.new(0, 50)
-UICorner_6.Parent = Welcome
+UICorner_13.Parent = Logo_2
 
-Welcome_2.Name = "Welcome"
-Welcome_2.Parent = Welcome
-Welcome_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Welcome_2.BackgroundTransparency = 1.000
-Welcome_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Welcome_2.BorderSizePixel = 0
-Welcome_2.Position = UDim2.new(1.41999996, 0, -0.0266662594, 0)
-Welcome_2.Size = UDim2.new(0, 78, 0, 13)
-Welcome_2.Font = Enum.Font.GothamBold
-Welcome_2.Text = "WELCOME"
-Welcome_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-Welcome_2.TextScaled = true
-Welcome_2.TextSize = 14.000
-Welcome_2.TextWrapped = true
+Text_2.Name = "Text"
+Text_2.Parent = Github
+Text_2.BackgroundTransparency = 1.000
+Text_2.Position = UDim2.new(0, 8, 0, 28)
+Text_2.Size = UDim2.new(1, -16, 0, 16)
+Text_2.Font = Enum.Font.Gotham
+Text_2.Text = "Come support Infinity Scripts! Come view our Github page!"
+Text_2.TextColor3 = Color3.fromRGB(160, 160, 170)
+Text_2.TextSize = 10.000
+Text_2.TextXAlignment = Enum.TextXAlignment.Left
 
-PlayerName.Name = "PlayerName"
-PlayerName.Parent = Welcome
-PlayerName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-PlayerName.BackgroundTransparency = 1.000
-PlayerName.BorderColor3 = Color3.fromRGB(0, 0, 0)
-PlayerName.BorderSizePixel = 0
-PlayerName.Position = UDim2.new(1.41999996, 0, 0.526666284, 0)
-PlayerName.Size = UDim2.new(0, 78, 0, 13)
-PlayerName.Font = Enum.Font.SourceSansBold
-PlayerName.Text = "PlayerName"
-PlayerName.TextColor3 = Color3.fromRGB(0, 0, 0)
-PlayerName.TextScaled = true
-PlayerName.TextSize = 14.000
-PlayerName.TextWrapped = true
+SubText.Name = "SubText"
+SubText.Parent = Github
+SubText.BackgroundTransparency = 1.000
+SubText.Position = UDim2.new(0, 8, 0, 46)
+SubText.Size = UDim2.new(1, -16, 0, 14)
+SubText.Font = Enum.Font.GothamBold
+SubText.Text = "CLICK TO COPY GITHUB LINK"
+SubText.TextColor3 = Color3.fromRGB(0, 174, 255)
+SubText.TextSize = 10.000
+SubText.TextXAlignment = Enum.TextXAlignment.Left
 
+local GithubClickBtn = Instance.new("TextButton")
+GithubClickBtn.Name = "ClickBtn"
+GithubClickBtn.Parent = Github
+GithubClickBtn.BackgroundTransparency = 1.000
+GithubClickBtn.Size = UDim2.new(1, 0, 1, 0)
+GithubClickBtn.Text = ""
+
+Discord.Name = "Discord"
+Discord.Parent = SupportHOME
+Discord.BackgroundColor3 = Color3.fromRGB(36, 38, 44)
+Discord.BorderSizePixel = 0
+Discord.Position = UDim2.new(0.048, 0, 0, 6)
+Discord.Size = UDim2.new(0, 360, 0, 65)
+
+UICorner_14.CornerRadius = UDim.new(0, 6)
+UICorner_14.Parent = Discord
+
+Name_4.Name = "Name"
+Name_4.Parent = Discord
+Name_4.BackgroundTransparency = 1.000
+Name_4.Position = UDim2.new(0, 35, 0, 6)
+Name_4.Size = UDim2.new(0, 114, 0, 18)
+Name_4.Font = Enum.Font.GothamBold
+Name_4.Text = "DISCORD"
+Name_4.TextColor3 = Color3.fromRGB(88, 101, 242)
+Name_4.TextSize = 13.000
+Name_4.TextXAlignment = Enum.TextXAlignment.Left
+
+Logo_3.Name = "Logo"
+Logo_3.Parent = Discord
+Logo_3.BackgroundTransparency = 1.000
+Logo_3.Position = UDim2.new(0, 8, 0, 7)
+Logo_3.Size = UDim2.new(0, 20, 0, 20)
+Logo_3.Image = "rbxassetid://87492930332581"
+
+UICorner_15.Parent = Logo_3
+
+Text_3.Name = "Text"
+Text_3.Parent = Discord
+Text_3.BackgroundTransparency = 1.000
+Text_3.Position = UDim2.new(0, 8, 0, 28)
+Text_3.Size = UDim2.new(1, -16, 0, 16)
+Text_3.Font = Enum.Font.Gotham
+Text_3.Text = "Join our Discord for scripts, help, and weekly updates!"
+Text_3.TextColor3 = Color3.fromRGB(160, 160, 170)
+Text_3.TextSize = 10.000
+Text_3.TextXAlignment = Enum.TextXAlignment.Left
+
+SubText_2.Name = "SubText"
+SubText_2.Parent = Discord
+SubText_2.BackgroundTransparency = 1.000
+SubText_2.Position = UDim2.new(0, 8, 0, 46)
+SubText_2.Size = UDim2.new(1, -16, 0, 14)
+SubText_2.Font = Enum.Font.GothamBold
+SubText_2.Text = "CLICK TO COPY DISCORD INVITE"
+SubText_2.TextColor3 = Color3.fromRGB(0, 174, 255)
+SubText_2.TextSize = 10.000
+SubText_2.TextXAlignment = Enum.TextXAlignment.Left
+
+local DiscordClickBtn = Instance.new("TextButton")
+DiscordClickBtn.Name = "ClickBtn"
+DiscordClickBtn.Parent = Discord
+DiscordClickBtn.BackgroundTransparency = 1.000
+DiscordClickBtn.Size = UDim2.new(1, 0, 1, 0)
+DiscordClickBtn.Text = ""
+
+-- GAME TAB
 Game.Name = "Game"
 Game.Parent = Main
-Game.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Game.BackgroundTransparency = 1.000
-Game.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Game.BorderSizePixel = 0
-Game.Position = UDim2.new(0.25261274, 0, 0.118000008, 0)
+Game.Position = UDim2.new(0.252000004, 0, 0.118000001, 0)
 Game.Size = UDim2.new(0, 93, 0, 18)
 Game.Font = Enum.Font.GothamBold
 Game.Text = "GAME"
 Game.TextColor3 = Color3.fromRGB(255, 255, 255)
 Game.TextScaled = true
-Game.TextSize = 14.000
 Game.TextWrapped = true
 
 Line_2.Name = "Line"
 Line_2.Parent = Game
-Line_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Line_2.BackgroundColor3 = Color3.fromRGB(0, 174, 255)
 Line_2.BorderSizePixel = 0
 Line_2.Position = UDim2.new(0.0939999968, 0, 1.10000002, 0)
 Line_2.Size = UDim2.new(0, 75, 0, 1)
 Line_2.Visible = false
-Line_2.Font = Enum.Font.SourceSans
 Line_2.Text = ""
-Line_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line_2.TextSize = 14.000
 
 GFrame.Name = "GFrame"
 GFrame.Parent = Game
-GFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 GFrame.BackgroundTransparency = 1.000
-GFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 GFrame.BorderSizePixel = 0
-GFrame.Position = UDim2.new(-0.956752956, 0, 2.61088824, 0)
+GFrame.Position = UDim2.new(-0.957000017, 0, 2.6099999, 0)
 GFrame.Size = UDim2.new(0, 375, 0, 381)
 GFrame.Visible = false
 
 Search.Name = "Search"
 Search.Parent = GFrame
 Search.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
-Search.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Search.BorderSizePixel = 0
-Search.Position = UDim2.new(0.0484947935, 0, 0, 0)
-Search.Size = UDim2.new(0, 357, 0, 31)
+Search.Position = UDim2.new(0.05, 0, 0, 0)
+Search.Size = UDim2.new(0, 340, 0, 31)
 Search.Font = Enum.Font.GothamBold
 Search.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
 Search.PlaceholderText = "SEARCH"
 Search.Text = ""
 Search.TextColor3 = Color3.fromRGB(255, 255, 255)
 Search.TextScaled = true
-Search.TextSize = 25.000
 Search.TextWrapped = true
 
-UICorner_7.Parent = Search
+local UICorner_Search = Instance.new("UICorner")
+UICorner_Search.Parent = Search
 
-ImageLabel_2.Parent = Search
-ImageLabel_2.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
-ImageLabel_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ImageLabel_2.BorderSizePixel = 0
-ImageLabel_2.Position = UDim2.new(-0.0530973375, 0, 0, 0)
-ImageLabel_2.Size = UDim2.new(0, 31, 0, 31)
-ImageLabel_2.Image = "rbxassetid://11496279085"
+SearchIcon.Name = "SearchIcon"
+SearchIcon.Parent = Search
+SearchIcon.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
+SearchIcon.BorderSizePixel = 0
+SearchIcon.Position = UDim2.new(0.91, 0, 0, 0)
+SearchIcon.Size = UDim2.new(0, 31, 0, 31)
+SearchIcon.Image = "rbxassetid://11496279085"
 
-UICorner_8.Parent = ImageLabel_2
+local UICorner_SIcon = Instance.new("UICorner")
+UICorner_SIcon.Parent = SearchIcon
 
--- ==========================================
--- GAME TAB: GAMES LIST CONTAINER
--- ==========================================
-local GamesScroll = Instance.new("ScrollingFrame")
-GamesScroll.Name = "GamesScroll"
-GamesScroll.Parent = GFrame
-GamesScroll.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-GamesScroll.BackgroundTransparency = 1.000
-GamesScroll.BorderSizePixel = 0
-GamesScroll.Position = UDim2.new(0.048, 0, 0, 38)
-GamesScroll.Size = UDim2.new(0, 357, 0, 336)
-GamesScroll.ScrollBarThickness = 3
-GamesScroll.ScrollBarImageColor3 = Color3.fromRGB(70, 75, 85)
-GamesScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-GamesScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ScrollingFrame.Name = "GamesScroll"
+ScrollingFrame.Parent = GFrame
+ScrollingFrame.Active = true
+ScrollingFrame.BackgroundTransparency = 1.000
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Position = UDim2.new(0.048, 0, 0, 38)
+ScrollingFrame.Size = UDim2.new(0, 357, 0, 336)
+ScrollingFrame.ScrollBarThickness = 4
+ScrollingFrame.ScrollBarImageColor3 = Color3.fromRGB(70, 75, 85)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 local GamesListLayout = Instance.new("UIListLayout")
-GamesListLayout.Parent = GamesScroll
+GamesListLayout.Parent = ScrollingFrame
 GamesListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 GamesListLayout.Padding = UDim.new(0, 8)
 
-ServerBtn.Name = "Server"
-ServerBtn.Parent = Main
-ServerBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ServerBtn.BackgroundTransparency = 1.000
-ServerBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ServerBtn.BorderSizePixel = 0
-ServerBtn.Position = UDim2.new(0.487681597, 0, 0.118000008, 0)
-ServerBtn.Size = UDim2.new(0, 93, 0, 18)
-ServerBtn.Font = Enum.Font.GothamBold
-ServerBtn.Text = "SERVER"
-ServerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ServerBtn.TextScaled = true
-ServerBtn.TextSize = 14.000
-ServerBtn.TextWrapped = true
+-- SERVER TAB
+Server.Name = "Server"
+Server.Parent = Main
+Server.BackgroundTransparency = 1.000
+Server.BorderSizePixel = 0
+Server.Position = UDim2.new(0.486999989, 0, 0.118000001, 0)
+Server.Size = UDim2.new(0, 93, 0, 18)
+Server.Font = Enum.Font.GothamBold
+Server.Text = "SERVER"
+Server.TextColor3 = Color3.fromRGB(255, 255, 255)
+Server.TextScaled = true
+Server.TextWrapped = true
 
-Line_3.Name = "Line"
-Line_3.Parent = ServerBtn
-Line_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Line_3.BorderSizePixel = 0
-Line_3.Position = UDim2.new(0.0939999968, 0, 1.10000002, 0)
-Line_3.Size = UDim2.new(0, 75, 0, 1)
-Line_3.Visible = false
-Line_3.Font = Enum.Font.SourceSans
-Line_3.Text = ""
-Line_3.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line_3.TextSize = 14.000
+Line_4.Name = "Line"
+Line_4.Parent = Server
+Line_4.BackgroundColor3 = Color3.fromRGB(0, 174, 255)
+Line_4.BorderSizePixel = 0
+Line_4.Position = UDim2.new(0.0939999968, 0, 1.10000002, 0)
+Line_4.Size = UDim2.new(0, 75, 0, 1)
+Line_4.Visible = false
+Line_4.Text = ""
 
--- ==========================================
--- SERVER TAB CONTAINER
--- ==========================================
 ServerFrame.Name = "ServerFrame"
-ServerFrame.Parent = ServerBtn
-ServerFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ServerFrame.Parent = Server
 ServerFrame.BackgroundTransparency = 1.000
 ServerFrame.BorderSizePixel = 0
-ServerFrame.Position = UDim2.new(-1.96774197, 0, 2.61088824, 0)
+ServerFrame.Position = UDim2.new(-1.96800005, 0, 2.6099999, 0)
 ServerFrame.Size = UDim2.new(0, 375, 0, 381)
 ServerFrame.Visible = false
 
--- 1. CURRENT EXPERIENCE CARD (Sharp Corners)
 GameCard.Name = "GameCard"
 GameCard.Parent = ServerFrame
 GameCard.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
@@ -673,76 +698,136 @@ GameCard.BorderSizePixel = 0
 GameCard.Position = UDim2.new(0, 9, 0, 4)
 GameCard.Size = UDim2.new(0, 357, 0, 102)
 
-GameCardStroke.Color = Color3.fromRGB(45, 48, 55)
-GameCardStroke.Thickness = 1
-GameCardStroke.Parent = GameCard
-
-GameHeader.Name = "Header"
-GameHeader.Parent = GameCard
-GameHeader.BackgroundTransparency = 1.000
-GameHeader.Position = UDim2.new(0, 12, 0, 7)
-GameHeader.Size = UDim2.new(0, 150, 0, 14)
-GameHeader.Font = Enum.Font.GothamBold
-GameHeader.Text = "CURRENT EXPERIENCE"
-GameHeader.TextColor3 = Color3.fromRGB(150, 150, 160)
-GameHeader.TextSize = 10.000
-GameHeader.TextXAlignment = Enum.TextXAlignment.Left
+Header.Name = "Header"
+Header.Parent = GameCard
+Header.BackgroundTransparency = 1.000
+Header.Position = UDim2.new(0, 12, 0, 7)
+Header.Size = UDim2.new(0, 150, 0, 14)
+Header.Font = Enum.Font.GothamBold
+Header.Text = "CURRENT EXPERIENCE"
+Header.TextColor3 = Color3.fromRGB(150, 150, 160)
+Header.TextSize = 10.000
+Header.TextXAlignment = Enum.TextXAlignment.Left
 
 SupportBadge.Name = "SupportBadge"
 SupportBadge.Parent = GameCard
-SupportBadge.BackgroundColor3 = Color3.fromRGB(15, 45, 25)
+SupportBadge.BackgroundColor3 = Color3.fromRGB(45, 15, 15)
 SupportBadge.BorderSizePixel = 0
-SupportBadge.Position = UDim2.new(1, -138, 0, 7)
-SupportBadge.Size = UDim2.new(0, 126, 0, 20)
+SupportBadge.Position = UDim2.new(1, -144, 0, 7)
+SupportBadge.Size = UDim2.new(0, 132, 0, 20)
 
-SupportBadgeStroke.Color = Color3.fromRGB(0, 255, 140)
-SupportBadgeStroke.Thickness = 1
-SupportBadgeStroke.Parent = SupportBadge
+local UICorner_SupportBadge = Instance.new("UICorner")
+UICorner_SupportBadge.CornerRadius = UDim.new(0, 4)
+UICorner_SupportBadge.Parent = SupportBadge
 
-SupportBadgeText.Name = "Text"
-SupportBadgeText.Parent = SupportBadge
-SupportBadgeText.BackgroundTransparency = 1.000
-SupportBadgeText.Size = UDim2.new(1, 0, 1, 0)
-SupportBadgeText.Font = Enum.Font.GothamBold
-SupportBadgeText.Text = "CHECKING..."
-SupportBadgeText.TextColor3 = Color3.fromRGB(0, 255, 140)
-SupportBadgeText.TextSize = 10.000
+Text.Name = "Text"
+Text.Parent = SupportBadge
+Text.BackgroundTransparency = 1.000
+Text.Size = UDim2.new(1, 0, 1, 0)
+Text.Font = Enum.Font.GothamBold
+Text.Text = "🔴 UNSUPPORTED"
+Text.TextColor3 = Color3.fromRGB(255, 65, 65)
+Text.TextSize = 10.000
 
-GameNameLabel.Name = "GameName"
-GameNameLabel.Parent = GameCard
-GameNameLabel.BackgroundTransparency = 1.000
-GameNameLabel.Position = UDim2.new(0, 12, 0, 27)
-GameNameLabel.Size = UDim2.new(1, -24, 0, 24)
-GameNameLabel.Font = Enum.Font.GothamBold
-GameNameLabel.Text = "Detecting Game..."
-GameNameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-GameNameLabel.TextSize = 15.000
-GameNameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-GameNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+GameName.Name = "GameName"
+GameName.Parent = GameCard
+GameName.BackgroundTransparency = 1.000
+GameName.Position = UDim2.new(0, 12, 0, 27)
+GameName.Size = UDim2.new(1, -24, 0, 24)
+GameName.Font = Enum.Font.GothamBold
+GameName.Text = "Current Experience"
+GameName.TextColor3 = Color3.fromRGB(255, 255, 255)
+GameName.TextSize = 15.000
+GameName.TextXAlignment = Enum.TextXAlignment.Left
 
-PlaceInfoLabel.Name = "PlaceInfo"
-PlaceInfoLabel.Parent = GameCard
-PlaceInfoLabel.BackgroundTransparency = 1.000
-PlaceInfoLabel.Position = UDim2.new(0, 12, 0, 54)
-PlaceInfoLabel.Size = UDim2.new(1, -24, 0, 16)
-PlaceInfoLabel.Font = Enum.Font.Gotham
-PlaceInfoLabel.Text = "Place ID: " .. tostring(game.PlaceId)
-PlaceInfoLabel.TextColor3 = Color3.fromRGB(160, 165, 175)
-PlaceInfoLabel.TextSize = 11.000
-PlaceInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+PlaceInfo.Name = "PlaceInfo"
+PlaceInfo.Parent = GameCard
+PlaceInfo.BackgroundTransparency = 1.000
+PlaceInfo.Position = UDim2.new(0, 12, 0, 54)
+PlaceInfo.Size = UDim2.new(1, -24, 0, 16)
+PlaceInfo.Font = Enum.Font.Gotham
+PlaceInfo.Text = "Place ID: " .. tostring(game.PlaceId)
+PlaceInfo.TextColor3 = Color3.fromRGB(160, 165, 175)
+PlaceInfo.TextSize = 11.000
+PlaceInfo.TextXAlignment = Enum.TextXAlignment.Left
 
-SubtitleLabel.Name = "Subtitle"
-SubtitleLabel.Parent = GameCard
-SubtitleLabel.BackgroundTransparency = 1.000
-SubtitleLabel.Position = UDim2.new(0, 12, 0, 73)
-SubtitleLabel.Size = UDim2.new(1, -24, 0, 18)
-SubtitleLabel.Font = Enum.Font.GothamBold
-SubtitleLabel.Text = "Checking Infinity Hub support status..."
-SubtitleLabel.TextColor3 = Color3.fromRGB(0, 174, 255)
-SubtitleLabel.TextSize = 11.000
-SubtitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+Subtitle.Name = "Subtitle"
+Subtitle.Parent = GameCard
+Subtitle.BackgroundTransparency = 1.000
+Subtitle.Position = UDim2.new(0, 12, 0, 73)
+Subtitle.Size = UDim2.new(1, -24, 0, 18)
+Subtitle.Font = Enum.Font.GothamBold
+Subtitle.Text = "This experience is unsupported by Infinity Hub."
+Subtitle.TextColor3 = Color3.fromRGB(255, 65, 65)
+Subtitle.TextSize = 11.000
+Subtitle.TextXAlignment = Enum.TextXAlignment.Left
 
--- 2. LIVE SERVER METRICS CARD (Sharp Corners)
+-- Function to check if the current game is present on the Games page
+local function updateSupportStatus()
+    local isSupported = false
+    local currentTitle = string.lower(GameName.Text or "")
+    local currentPlaceId = tostring(game.PlaceId)
+
+    for _, item in ipairs(ScrollingFrame:GetChildren()) do
+        if item:IsA("Frame") or item:IsA("GuiObject") then
+            -- Check card's title label
+            local titleObj = item:FindFirstChild("Title") or item:FindFirstChild("GameTitle")
+            if titleObj and titleObj:IsA("TextLabel") then
+                local cardTitle = string.lower(titleObj.Text)
+                if cardTitle ~= "" and (string.find(currentTitle, cardTitle, 1, true) or string.find(cardTitle, currentTitle, 1, true)) then
+                    isSupported = true
+                    break
+                end
+            end
+
+            -- Check if card has a PlaceId attribute or Value
+            local placeAttr = item:GetAttribute("PlaceId") or (item:FindFirstChild("PlaceId") and item.PlaceId.Value)
+            if placeAttr and tostring(placeAttr) == currentPlaceId then
+                isSupported = true
+                break
+            end
+
+            -- Check card name
+            local cardName = string.lower(item.Name)
+            if cardName ~= "" and cardName ~= "gameslistlayout" and cardName ~= "uilistlayout" then
+                if string.find(currentTitle, cardName, 1, true) or string.find(cardName, currentTitle, 1, true) then
+                    isSupported = true
+                    break
+                end
+            end
+        end
+    end
+
+    if isSupported then
+        SupportBadge.BackgroundColor3 = Color3.fromRGB(15, 45, 25)
+        Text.Text = "🟢 SUPPORTED"
+        Text.TextColor3 = Color3.fromRGB(0, 255, 140)
+        Subtitle.Text = "This experience is supported by Infinity Hub."
+        Subtitle.TextColor3 = Color3.fromRGB(0, 255, 140)
+    else
+        SupportBadge.BackgroundColor3 = Color3.fromRGB(45, 15, 15)
+        Text.Text = "🔴 UNSUPPORTED"
+        Text.TextColor3 = Color3.fromRGB(255, 65, 65)
+        Subtitle.Text = "This experience is unsupported by Infinity Hub."
+        Subtitle.TextColor3 = Color3.fromRGB(255, 65, 65)
+    end
+end
+
+-- Asynchronously fetch game name and refresh support status
+task.spawn(function()
+    local sTitle, gInfo = pcall(function()
+        return game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+    end)
+    if sTitle and gInfo and gInfo.Name and GameName and GameName.Parent then
+        GameName.Text = gInfo.Name
+    end
+    updateSupportStatus()
+end)
+
+-- Auto update if games are dynamically added/removed from the Game page
+ScrollingFrame.ChildAdded:Connect(updateSupportStatus)
+ScrollingFrame.ChildRemoved:Connect(updateSupportStatus)
+
 StatsCard.Name = "StatsCard"
 StatsCard.Parent = ServerFrame
 StatsCard.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
@@ -750,65 +835,60 @@ StatsCard.BorderSizePixel = 0
 StatsCard.Position = UDim2.new(0, 9, 0, 114)
 StatsCard.Size = UDim2.new(0, 357, 0, 128)
 
-StatsCardStroke.Color = Color3.fromRGB(45, 48, 55)
-StatsCardStroke.Thickness = 1
-StatsCardStroke.Parent = StatsCard
+Header_2.Name = "Header"
+Header_2.Parent = StatsCard
+Header_2.BackgroundTransparency = 1.000
+Header_2.Position = UDim2.new(0, 12, 0, 7)
+Header_2.Size = UDim2.new(0, 150, 0, 14)
+Header_2.Font = Enum.Font.GothamBold
+Header_2.Text = "LIVE SERVER METRICS"
+Header_2.TextColor3 = Color3.fromRGB(150, 150, 160)
+Header_2.TextSize = 10.000
+Header_2.TextXAlignment = Enum.TextXAlignment.Left
 
-StatsHeader.Name = "Header"
-StatsHeader.Parent = StatsCard
-StatsHeader.BackgroundTransparency = 1.000
-StatsHeader.Position = UDim2.new(0, 12, 0, 7)
-StatsHeader.Size = UDim2.new(0, 150, 0, 14)
-StatsHeader.Font = Enum.Font.GothamBold
-StatsHeader.Text = "LIVE SERVER METRICS"
-StatsHeader.TextColor3 = Color3.fromRGB(150, 150, 160)
-StatsHeader.TextSize = 10.000
-StatsHeader.TextXAlignment = Enum.TextXAlignment.Left
+Players_Lbl.Name = "Players"
+Players_Lbl.Parent = StatsCard
+Players_Lbl.BackgroundTransparency = 1.000
+Players_Lbl.Position = UDim2.new(0, 12, 0, 28)
+Players_Lbl.Size = UDim2.new(0.5, -16, 0, 20)
+Players_Lbl.Font = Enum.Font.GothamBold
+Players_Lbl.Text = "👥 Players: " .. tostring(#Players:GetPlayers())
+Players_Lbl.TextColor3 = Color3.fromRGB(240, 240, 245)
+Players_Lbl.TextSize = 12.000
+Players_Lbl.TextXAlignment = Enum.TextXAlignment.Left
 
-PlayersLabel.Name = "Players"
-PlayersLabel.Parent = StatsCard
-PlayersLabel.BackgroundTransparency = 1.000
-PlayersLabel.Position = UDim2.new(0, 12, 0, 28)
-PlayersLabel.Size = UDim2.new(0.5, -16, 0, 20)
-PlayersLabel.Font = Enum.Font.GothamBold
-PlayersLabel.Text = "👥 Players: Loading..."
-PlayersLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
-PlayersLabel.TextSize = 12.000
-PlayersLabel.TextXAlignment = Enum.TextXAlignment.Left
+Ping.Name = "Ping"
+Ping.Parent = StatsCard
+Ping.BackgroundTransparency = 1.000
+Ping.Position = UDim2.new(0.5, 4, 0, 28)
+Ping.Size = UDim2.new(0.5, -16, 0, 20)
+Ping.Font = Enum.Font.GothamBold
+Ping.Text = "📶 Ping: 32 ms"
+Ping.TextColor3 = Color3.fromRGB(240, 240, 245)
+Ping.TextSize = 12.000
+Ping.TextXAlignment = Enum.TextXAlignment.Left
 
-PingLabel.Name = "Ping"
-PingLabel.Parent = StatsCard
-PingLabel.BackgroundTransparency = 1.000
-PingLabel.Position = UDim2.new(0.5, 4, 0, 28)
-PingLabel.Size = UDim2.new(0.5, -16, 0, 20)
-PingLabel.Font = Enum.Font.GothamBold
-PingLabel.Text = "📶 Ping: -- ms"
-PingLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
-PingLabel.TextSize = 12.000
-PingLabel.TextXAlignment = Enum.TextXAlignment.Left
+Uptime.Name = "Uptime"
+Uptime.Parent = StatsCard
+Uptime.BackgroundTransparency = 1.000
+Uptime.Position = UDim2.new(0, 12, 0, 56)
+Uptime.Size = UDim2.new(1, -24, 0, 20)
+Uptime.Font = Enum.Font.GothamBold
+Uptime.Text = "⏱️ Server Uptime: 01h 45m 12s"
+Uptime.TextColor3 = Color3.fromRGB(240, 240, 245)
+Uptime.TextSize = 12.000
+Uptime.TextXAlignment = Enum.TextXAlignment.Left
 
-UptimeLabel.Name = "Uptime"
-UptimeLabel.Parent = StatsCard
-UptimeLabel.BackgroundTransparency = 1.000
-UptimeLabel.Position = UDim2.new(0, 12, 0, 56)
-UptimeLabel.Size = UDim2.new(1, -24, 0, 20)
-UptimeLabel.Font = Enum.Font.GothamBold
-UptimeLabel.Text = "⏱️ Server Uptime: 00h 00m 00s"
-UptimeLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
-UptimeLabel.TextSize = 12.000
-UptimeLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-JobIdLabel.Name = "JobId"
-JobIdLabel.Parent = StatsCard
-JobIdLabel.BackgroundTransparency = 1.000
-JobIdLabel.Position = UDim2.new(0, 12, 0, 90)
-JobIdLabel.Size = UDim2.new(1, -165, 0, 24)
-JobIdLabel.Font = Enum.Font.Gotham
-JobIdLabel.Text = "Server ID: " .. string.sub(game.JobId ~= "" and game.JobId or "SinglePlayerServer", 1, 14) .. "..."
-JobIdLabel.TextColor3 = Color3.fromRGB(160, 165, 175)
-JobIdLabel.TextSize = 11.000
-JobIdLabel.TextTruncate = Enum.TextTruncate.AtEnd
-JobIdLabel.TextXAlignment = Enum.TextXAlignment.Left
+JobId.Name = "JobId"
+JobId.Parent = StatsCard
+JobId.BackgroundTransparency = 1.000
+JobId.Position = UDim2.new(0, 12, 0, 90)
+JobId.Size = UDim2.new(1, -165, 0, 24)
+JobId.Font = Enum.Font.Gotham
+JobId.Text = "Server ID: " .. string.sub(game.JobId ~= "" and game.JobId or "SinglePlayer", 1, 14) .. "..."
+JobId.TextColor3 = Color3.fromRGB(160, 165, 175)
+JobId.TextSize = 11.000
+JobId.TextXAlignment = Enum.TextXAlignment.Left
 
 CopyJobBtn.Name = "CopyJobBtn"
 CopyJobBtn.Parent = StatsCard
@@ -820,9 +900,7 @@ CopyJobBtn.Font = Enum.Font.GothamBold
 CopyJobBtn.Text = "Copy game Session"
 CopyJobBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 CopyJobBtn.TextSize = 11.000
-CopyJobBtn.AutoButtonColor = true
 
--- 3. SERVER QUICK ACTIONS CARD (Sharp Corners)
 ActionsCard.Name = "ActionsCard"
 ActionsCard.Parent = ServerFrame
 ActionsCard.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
@@ -830,20 +908,16 @@ ActionsCard.BorderSizePixel = 0
 ActionsCard.Position = UDim2.new(0, 9, 0, 252)
 ActionsCard.Size = UDim2.new(0, 357, 0, 72)
 
-ActionsCardStroke.Color = Color3.fromRGB(45, 48, 55)
-ActionsCardStroke.Thickness = 1
-ActionsCardStroke.Parent = ActionsCard
-
-ActionsHeader.Name = "Header"
-ActionsHeader.Parent = ActionsCard
-ActionsHeader.BackgroundTransparency = 1.000
-ActionsHeader.Position = UDim2.new(0, 12, 0, 7)
-ActionsHeader.Size = UDim2.new(0, 150, 0, 14)
-ActionsHeader.Font = Enum.Font.GothamBold
-ActionsHeader.Text = "SERVER QUICK ACTIONS"
-ActionsHeader.TextColor3 = Color3.fromRGB(150, 150, 160)
-ActionsHeader.TextSize = 10.000
-ActionsHeader.TextXAlignment = Enum.TextXAlignment.Left
+Header_3.Name = "Header"
+Header_3.Parent = ActionsCard
+Header_3.BackgroundTransparency = 1.000
+Header_3.Position = UDim2.new(0, 12, 0, 7)
+Header_3.Size = UDim2.new(0, 150, 0, 14)
+Header_3.Font = Enum.Font.GothamBold
+Header_3.Text = "SERVER QUICK ACTIONS"
+Header_3.TextColor3 = Color3.fromRGB(150, 150, 160)
+Header_3.TextSize = 10.000
+Header_3.TextXAlignment = Enum.TextXAlignment.Left
 
 RejoinBtn.Name = "RejoinBtn"
 RejoinBtn.Parent = ActionsCard
@@ -855,7 +929,6 @@ RejoinBtn.Font = Enum.Font.GothamBold
 RejoinBtn.Text = "REJOIN SERVER"
 RejoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 RejoinBtn.TextSize = 11.000
-RejoinBtn.AutoButtonColor = true
 
 ServerHopBtn.Name = "ServerHopBtn"
 ServerHopBtn.Parent = ActionsCard
@@ -867,650 +940,234 @@ ServerHopBtn.Font = Enum.Font.GothamBold
 ServerHopBtn.Text = "SERVER HOP"
 ServerHopBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ServerHopBtn.TextSize = 11.000
-ServerHopBtn.AutoButtonColor = true
 
-ServerHopBtnStroke.Color = Color3.fromRGB(0, 174, 255)
-ServerHopBtnStroke.Thickness = 1
-ServerHopBtnStroke.Parent = ServerHopBtn
-
+-- SETTINGS TAB
 Settings.Name = "Settings"
 Settings.Parent = Main
-Settings.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Settings.BackgroundTransparency = 1.000
-Settings.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Settings.BorderSizePixel = 0
-Settings.Position = UDim2.new(0.720244348, 0, 0.118000008, 0)
+Settings.Position = UDim2.new(0.720000029, 0, 0.118000001, 0)
 Settings.Size = UDim2.new(0, 93, 0, 18)
 Settings.Font = Enum.Font.GothamBold
 Settings.Text = "SETTINGS"
 Settings.TextColor3 = Color3.fromRGB(255, 255, 255)
 Settings.TextScaled = true
-Settings.TextSize = 14.000
 Settings.TextWrapped = true
+
+Line_5.Name = "Line"
+Line_5.Parent = Settings
+Line_5.BackgroundColor3 = Color3.fromRGB(0, 174, 255)
+Line_5.BorderSizePixel = 0
+Line_5.Position = UDim2.new(0.0939999968, 0, 1.10000002, 0)
+Line_5.Size = UDim2.new(0, 75, 0, 1)
+Line_5.Visible = false
+Line_5.Text = ""
 
 SFrame.Name = "SFrame"
 SFrame.Parent = Settings
-SFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 SFrame.BackgroundTransparency = 1.000
-SFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 SFrame.BorderSizePixel = 0
-SFrame.Position = UDim2.new(-2.96774197, 0, 2.44444537, 0)
+SFrame.Position = UDim2.new(-2.96799994, 0, 2.44400001, 0)
 SFrame.Size = UDim2.new(0, 375, 0, 381)
 SFrame.Visible = false
 
 Volume.Name = "Volume"
 Volume.Parent = SFrame
-Volume.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Volume.BackgroundTransparency = 1.000
-Volume.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Volume.BorderSizePixel = 0
-Volume.Position = UDim2.new(0.279999822, 0, 0, 0)
+Volume.Position = UDim2.new(0.280000001, 0, 0, 0)
 Volume.Size = UDim2.new(0, 166, 0, 32)
 Volume.Font = Enum.Font.GothamBold
 Volume.Text = "VOLUME"
 Volume.TextColor3 = Color3.fromRGB(255, 255, 255)
 Volume.TextScaled = true
-Volume.TextSize = 14.000
 Volume.TextWrapped = true
 
 UiSounds.Name = "UiSounds"
 UiSounds.Parent = Volume
-UiSounds.Active = true
-UiSounds.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 UiSounds.BackgroundTransparency = 1.000
-UiSounds.BorderColor3 = Color3.fromRGB(0, 0, 0)
-UiSounds.BorderSizePixel = 0
-UiSounds.Position = UDim2.new(-0.629220963, 0, 1.87637806, 0)
+UiSounds.Position = UDim2.new(-0.629000008, 0, 1.87600005, 0)
 UiSounds.Size = UDim2.new(0, 130, 0, 31)
 UiSounds.Font = Enum.Font.GothamBold
 UiSounds.Text = "UI SOUNDS"
 UiSounds.TextColor3 = Color3.fromRGB(255, 255, 255)
 UiSounds.TextScaled = true
-UiSounds.TextSize = 14.000
 UiSounds.TextWrapped = true
-
-DragCount.Name = "DragCount"
-DragCount.Parent = UiSounds
-DragCount.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-DragCount.BackgroundTransparency = 1.000
-DragCount.BorderColor3 = Color3.fromRGB(0, 0, 0)
-DragCount.BorderSizePixel = 0
-DragCount.Position = UDim2.new(1.13100004, 0, -0.5, 0)
-DragCount.Size = UDim2.new(0, 200, 0, 50)
-DragCount.Font = Enum.Font.GothamBold
-DragCount.Text = "1"
-DragCount.TextColor3 = Color3.fromRGB(255, 255, 255)
-DragCount.TextSize = 14.000
 
 DragBackground.Name = "DragBackground"
 DragBackground.Parent = UiSounds
-DragBackground.Active = true
 DragBackground.BackgroundColor3 = Color3.fromRGB(85, 85, 85)
-DragBackground.BorderColor3 = Color3.fromRGB(0, 0, 0)
 DragBackground.BorderSizePixel = 0
-DragBackground.Position = UDim2.new(1.12676907, 0, 0.601612687, 0)
+DragBackground.Position = UDim2.new(1.12699997, 0, 0.601999998, 0)
 DragBackground.Size = UDim2.new(0, 200, 0, 6)
-DragBackground.Font = Enum.Font.SourceSans
 DragBackground.Text = ""
-DragBackground.TextColor3 = Color3.fromRGB(0, 0, 0)
-DragBackground.TextSize = 14.000
 
 UICorner_9.Parent = DragBackground
 
 Drag.Name = "Drag"
 Drag.Parent = DragBackground
-Drag.Active = true
 Drag.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Drag.BorderColor3 = Color3.fromRGB(0, 0, 0)
 Drag.BorderSizePixel = 0
-Drag.Position = UDim2.new(0.00100006105, 0, -0.0166676845, 0)
-Drag.Size = UDim2.new(0, 200, 0, 6)
-Drag.Font = Enum.Font.SourceSans
+Drag.Size = UDim2.new(0.800000012, 0, 1, 0)
 Drag.Text = ""
-Drag.TextColor3 = Color3.fromRGB(0, 0, 0)
-Drag.TextSize = 14.000
 
 UICorner_10.Parent = Drag
 
-Line1.Name = "Line1"
-Line1.Parent = Volume
-Line1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line1.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Line1.BorderSizePixel = 0
-Line1.Position = UDim2.new(-0.606237769, 0, 0.4375, 0)
-Line1.Size = UDim2.new(-0.538340747, 200, 0.0999995321, 0)
-Line1.Font = Enum.Font.SourceSans
-Line1.Text = ""
-Line1.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line1.TextSize = 14.000
-
-UIGradient.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(0.30, 0.50), NumberSequenceKeypoint.new(0.44, 0.35), NumberSequenceKeypoint.new(0.60, 0.51), NumberSequenceKeypoint.new(1.00, 1.00)}
-UIGradient.Parent = Line1
-
-Line2.Name = "Line2"
-Line2.Parent = Volume
-Line2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Line2.BorderSizePixel = 0
-Line2.Position = UDim2.new(0.960027099, 0, 0.4375, 0)
-Line2.Size = UDim2.new(-0.538340747, 200, 0.0999995321, 0)
-Line2.Font = Enum.Font.SourceSans
-Line2.Text = ""
-Line2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line2.TextSize = 14.000
-
-UIGradient_2.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(0.30, 0.50), NumberSequenceKeypoint.new(0.44, 0.35), NumberSequenceKeypoint.new(0.60, 0.51), NumberSequenceKeypoint.new(1.00, 1.00)}
-UIGradient_2.Parent = Line2
+DragCount.Name = "DragCount"
+DragCount.Parent = UiSounds
+DragCount.BackgroundTransparency = 1.000
+DragCount.Position = UDim2.new(1.13100004, 0, -0.5, 0)
+DragCount.Size = UDim2.new(0, 200, 0, 50)
+DragCount.Font = Enum.Font.GothamBold
+DragCount.Text = "0.8"
+DragCount.TextColor3 = Color3.fromRGB(255, 255, 255)
+DragCount.TextSize = 14.000
 
 UI.Name = "UI"
 UI.Parent = SFrame
-UI.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 UI.BackgroundTransparency = 1.000
-UI.BorderColor3 = Color3.fromRGB(0, 0, 0)
-UI.BorderSizePixel = 0
-UI.Position = UDim2.new(0.279999822, 0, 0.322834641, 0)
+UI.Position = UDim2.new(0.280000001, 0, 0.323000014, 0)
 UI.Size = UDim2.new(0, 166, 0, 32)
 UI.Font = Enum.Font.GothamBold
 UI.Text = "UI"
 UI.TextColor3 = Color3.fromRGB(255, 255, 255)
 UI.TextScaled = true
-UI.TextSize = 14.000
 UI.TextWrapped = true
 
--- ==========================================
--- 1. DOTS ROW & BOX (White box with Checkmark)
--- ==========================================
-Dots.Name = "Dots"
-Dots.Parent = UI
-Dots.Active = true
-Dots.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Dots.BackgroundTransparency = 1.000
-Dots.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Dots.BorderSizePixel = 0
-Dots.Position = UDim2.new(-0.629220963, 0, 1.80000000, 0)
-Dots.Size = UDim2.new(0, 130, 0, 31)
-Dots.Font = Enum.Font.GothamBold
-Dots.Text = "DOTS"
-Dots.TextColor3 = Color3.fromRGB(255, 255, 255)
-Dots.TextScaled = true
-Dots.TextSize = 14.000
-Dots.TextWrapped = true
+DOTS.Name = "DOTS"
+DOTS.Parent = UI
+DOTS.BackgroundTransparency = 1.000
+DOTS.Position = UDim2.new(-0.629000008, 0, 1.79999995, 0)
+DOTS.Size = UDim2.new(0, 130, 0, 31)
+DOTS.Font = Enum.Font.GothamBold
+DOTS.Text = "DOTS"
+DOTS.TextColor3 = Color3.fromRGB(255, 255, 255)
+DOTS.TextScaled = true
+DOTS.TextWrapped = true
 
 Box.Name = "Box"
-Box.Parent = Dots
-Box.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Box.Parent = DOTS
 Box.BackgroundTransparency = 1.000
-Box.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Box.BorderSizePixel = 0
-Box.Position = UDim2.new(2.34615374, 0, 0.0322570801, 0)
+Box.Position = UDim2.new(2.34599996, 0, 0.0320000015, 0)
 Box.Size = UDim2.new(0, 28, 0, 28)
-Box.Font = Enum.Font.SourceSans
 Box.Text = ""
-Box.TextColor3 = Color3.fromRGB(0, 0, 0)
-Box.TextSize = 14.000
 
 On.Name = "On"
 On.Parent = Box
 On.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-On.BorderColor3 = Color3.fromRGB(0, 0, 0)
 On.BorderSizePixel = 0
 On.Position = UDim2.new(0.100000001, 0, 0.115000002, 0)
 On.Size = UDim2.new(0, 22, 0, 22)
-On.Font = Enum.Font.SourceSans
 On.Text = ""
-On.TextColor3 = Color3.fromRGB(0, 0, 0)
-On.TextSize = 14.000
-On.Visible = true
 
 Check.Name = "Check"
 Check.Parent = On
-Check.Active = false
 Check.BackgroundTransparency = 1.000
-Check.BorderSizePixel = 0
-Check.Position = UDim2.new(0.1, 0, 0.1, 0)
-Check.Size = UDim2.new(0.8, 0, 0.8, 0)
+Check.Position = UDim2.new(0.100000001, 0, 0.100000001, 0)
+Check.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
 Check.Image = "rbxassetid://6031094667"
 Check.ImageColor3 = Color3.fromRGB(20, 20, 20)
-Check.Visible = true
 
-Info.Name = "Info"
-Info.Parent = Dots
-Info.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Info.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Info.BorderSizePixel = 0
-Info.Position = UDim2.new(3.06923079, 0, 0, 0)
-Info.Size = UDim2.new(0, 148, 0, 142)
-Info.Visible = false
-Info.ZIndex = 5
-
-OnOff.Name = "On/Off"
-OnOff.Parent = Info
-OnOff.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OnOff.BackgroundTransparency = 1.000
-OnOff.BorderColor3 = Color3.fromRGB(0, 0, 0)
-OnOff.BorderSizePixel = 0
-OnOff.Position = UDim2.new(0.0405405387, 0, 0.183098584, 0)
-OnOff.Size = UDim2.new(0, 26, 0, 17)
-OnOff.Font = Enum.Font.GothamBold
-OnOff.Text = "ON"
-OnOff.TextColor3 = Color3.fromRGB(13, 255, 0)
-OnOff.TextScaled = true
-OnOff.TextSize = 14.000
-OnOff.TextWrapped = true
-
-Name_4.Name = "Name"
-Name_4.Parent = Info
-Name_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Name_4.BackgroundTransparency = 1.000
-Name_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name_4.BorderSizePixel = 0
-Name_4.Position = UDim2.new(0.0405405387, 0, 0.0352112688, 0)
-Name_4.Size = UDim2.new(0, 49, 0, 20)
-Name_4.Font = Enum.Font.GothamBold
-Name_4.Text = "DOTS"
-Name_4.TextColor3 = Color3.fromRGB(255, 255, 255)
-Name_4.TextScaled = true
-Name_4.TextSize = 14.000
-Name_4.TextWrapped = true
-
-Information.Name = "Information"
-Information.Parent = Info
-Information.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Information.BackgroundTransparency = 1.000
-Information.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Information.BorderSizePixel = 0
-Information.Position = UDim2.new(0, 0, 0.302816898, 0)
-Information.Size = UDim2.new(0, 148, 0, 91)
-Information.Font = Enum.Font.GothamBold
-Information.Text = "Dots will impact performance. If you would like better performance you can turn this off, this is only for decor."
-Information.TextColor3 = Color3.fromRGB(255, 255, 255)
-Information.TextScaled = true
-Information.TextSize = 14.000
-Information.TextWrapped = true
-
-Line1_2.Name = "Line1"
-Line1_2.Parent = UI
-Line1_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line1_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Line1_2.BorderSizePixel = 0
-Line1_2.Position = UDim2.new(-0.606237769, 0, 0.4375, 0)
-Line1_2.Size = UDim2.new(-0.538340747, 200, 0.0999995321, 0)
-Line1_2.Font = Enum.Font.SourceSans
-Line1_2.Text = ""
-Line1_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line1_2.TextSize = 14.000
-
-UIGradient_3.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(0.30, 0.50), NumberSequenceKeypoint.new(0.44, 0.35), NumberSequenceKeypoint.new(0.60, 0.51), NumberSequenceKeypoint.new(1.00, 1.00)}
-UIGradient_3.Parent = Line1_2
-
-Line2_2.Name = "Line2"
-Line2_2.Parent = UI
-Line2_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Line2_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Line2_2.BorderSizePixel = 0
-Line2_2.Position = UDim2.new(0.960027099, 0, 0.4375, 0)
-Line2_2.Size = UDim2.new(-0.538340747, 200, 0.0999995321, 0)
-Line2_2.Font = Enum.Font.SourceSans
-Line2_2.Text = ""
-Line2_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line2_2.TextSize = 14.000
-
-UIGradient_4.Transparency = NumberSequence.new{NumberSequenceKeypoint.new(0.00, 1.00), NumberSequenceKeypoint.new(0.30, 0.50), NumberSequenceKeypoint.new(0.44, 0.35), NumberSequenceKeypoint.new(0.60, 0.51), NumberSequenceKeypoint.new(1.00, 1.00)}
-UIGradient_4.Parent = Line2_2
-
--- ==========================================
--- 2. GRADIENT ROW & BOX (White box with Checkmark)
--- ==========================================
-Gradient.Name = "Gradient"
-Gradient.Parent = UI
-Gradient.Active = true
-Gradient.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Gradient.BackgroundTransparency = 1.000
-Gradient.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Gradient.BorderSizePixel = 0
-Gradient.Position = UDim2.new(-0.629220963, 0, 3.50000000, 0)
-Gradient.Size = UDim2.new(0, 130, 0, 31)
-Gradient.Font = Enum.Font.GothamBold
-Gradient.Text = "GRADIENT"
-Gradient.TextColor3 = Color3.fromRGB(255, 255, 255)
-Gradient.TextScaled = true
-Gradient.TextSize = 14.000
-Gradient.TextWrapped = true
+GRADIENT.Name = "GRADIENT"
+GRADIENT.Parent = UI
+GRADIENT.BackgroundTransparency = 1.000
+GRADIENT.Position = UDim2.new(-0.629000008, 0, 3.5, 0)
+GRADIENT.Size = UDim2.new(0, 130, 0, 31)
+GRADIENT.Font = Enum.Font.GothamBold
+GRADIENT.Text = "GRADIENT"
+GRADIENT.TextColor3 = Color3.fromRGB(255, 255, 255)
+GRADIENT.TextScaled = true
+GRADIENT.TextWrapped = true
 
 Box_2.Name = "Box"
-Box_2.Parent = Gradient
-Box_2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Box_2.Parent = GRADIENT
 Box_2.BackgroundTransparency = 1.000
-Box_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Box_2.BorderSizePixel = 0
-Box_2.Position = UDim2.new(2.34615374, 0, 0.0322570801, 0)
+Box_2.Position = UDim2.new(2.34599996, 0, 0.0320000015, 0)
 Box_2.Size = UDim2.new(0, 28, 0, 28)
-Box_2.Font = Enum.Font.SourceSans
 Box_2.Text = ""
-Box_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-Box_2.TextSize = 14.000
 
 On_2.Name = "On"
 On_2.Parent = Box_2
 On_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-On_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 On_2.BorderSizePixel = 0
 On_2.Position = UDim2.new(0.100000001, 0, 0.115000002, 0)
 On_2.Size = UDim2.new(0, 22, 0, 22)
-On_2.Font = Enum.Font.SourceSans
 On_2.Text = ""
-On_2.TextColor3 = Color3.fromRGB(0, 0, 0)
-On_2.TextSize = 14.000
-On_2.Visible = true
 
 Check_2.Name = "Check"
 Check_2.Parent = On_2
-Check_2.Active = false
 Check_2.BackgroundTransparency = 1.000
-Check_2.BorderSizePixel = 0
-Check_2.Position = UDim2.new(0.1, 0, 0.1, 0)
-Check_2.Size = UDim2.new(0.8, 0, 0.8, 0)
+Check_2.Position = UDim2.new(0.100000001, 0, 0.100000001, 0)
+Check_2.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
 Check_2.Image = "rbxassetid://6031094667"
 Check_2.ImageColor3 = Color3.fromRGB(20, 20, 20)
-Check_2.Visible = true
 
-Info_2.Name = "Info"
-Info_2.Parent = Gradient
-Info_2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Info_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Info_2.BorderSizePixel = 0
-Info_2.Position = UDim2.new(3.06923079, 0, 0, 0)
-Info_2.Size = UDim2.new(0, 148, 0, 142)
-Info_2.Visible = false
-
-OnOff_2.Name = "On/Off"
-OnOff_2.Parent = Info_2
-OnOff_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OnOff_2.BackgroundTransparency = 1.000
-OnOff_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-OnOff_2.BorderSizePixel = 0
-OnOff_2.Position = UDim2.new(0.0405405387, 0, 0.183098584, 0)
-OnOff_2.Size = UDim2.new(0, 26, 0, 17)
-OnOff_2.Font = Enum.Font.GothamBold
-OnOff_2.Text = "ON"
-OnOff_2.TextColor3 = Color3.fromRGB(13, 255, 0)
-OnOff_2.TextScaled = true
-OnOff_2.TextSize = 14.000
-OnOff_2.TextWrapped = true
-
-Name_5.Name = "Name"
-Name_5.Parent = Info_2
-Name_5.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Name_5.BackgroundTransparency = 1.000
-Name_5.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name_5.BorderSizePixel = 0
-Name_5.Position = UDim2.new(0.0405405387, 0, 0.0140845068, 0)
-Name_5.Size = UDim2.new(0, 70, 0, 26)
-Name_5.Font = Enum.Font.GothamBold
-Name_5.Text = "GRADIENT"
-Name_5.TextColor3 = Color3.fromRGB(255, 255, 255)
-Name_5.TextScaled = true
-Name_5.TextSize = 14.000
-Name_5.TextWrapped = true
-
-Information_2.Name = "Information"
-Information_2.Parent = Info_2
-Information_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Information_2.BackgroundTransparency = 1.000
-Information_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Information_2.BorderSizePixel = 0
-Information_2.Position = UDim2.new(0, 0, 0.302816898, 0)
-Information_2.Size = UDim2.new(0, 148, 0, 91)
-Information_2.Font = Enum.Font.GothamBold
-Information_2.Text = "Gradient will impact performance. If you would like better performance you can turn this off, this is only for decor."
-Information_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-Information_2.TextScaled = true
-Information_2.TextSize = 14.000
-Information_2.TextWrapped = true
-
--- ==========================================
--- 3. SHADOW ROW & BOX (White box with Checkmark)
--- ==========================================
-Shadow.Name = "Shadow"
-Shadow.Parent = UI
-Shadow.Active = true
-Shadow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Shadow.BackgroundTransparency = 1.000
-Shadow.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Shadow.BorderSizePixel = 0
-Shadow.Position = UDim2.new(-0.629000008, 0, 5.20000000, 0)
-Shadow.Size = UDim2.new(0, 130, 0, 31)
-Shadow.Font = Enum.Font.GothamBold
-Shadow.Text = "SHADOW"
-Shadow.TextColor3 = Color3.fromRGB(255, 255, 255)
-Shadow.TextScaled = true
-Shadow.TextSize = 14.000
-Shadow.TextWrapped = true
+SHADOW.Name = "SHADOW"
+SHADOW.Parent = UI
+SHADOW.BackgroundTransparency = 1.000
+SHADOW.Position = UDim2.new(-0.629000008, 0, 5.19999981, 0)
+SHADOW.Size = UDim2.new(0, 130, 0, 31)
+SHADOW.Font = Enum.Font.GothamBold
+SHADOW.Text = "SHADOW"
+SHADOW.TextColor3 = Color3.fromRGB(255, 255, 255)
+SHADOW.TextScaled = true
+SHADOW.TextWrapped = true
 
 Box_3.Name = "Box"
-Box_3.Parent = Shadow
-Box_3.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Box_3.Parent = SHADOW
 Box_3.BackgroundTransparency = 1.000
-Box_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Box_3.BorderSizePixel = 0
-Box_3.Position = UDim2.new(2.34615374, 0, 0.0322570801, 0)
+Box_3.Position = UDim2.new(2.34599996, 0, 0.0320000015, 0)
 Box_3.Size = UDim2.new(0, 28, 0, 28)
-Box_3.Font = Enum.Font.SourceSans
 Box_3.Text = ""
-Box_3.TextColor3 = Color3.fromRGB(0, 0, 0)
-Box_3.TextSize = 14.000
 
 On_3.Name = "On"
 On_3.Parent = Box_3
 On_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-On_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
 On_3.BorderSizePixel = 0
 On_3.Position = UDim2.new(0.100000001, 0, 0.115000002, 0)
 On_3.Size = UDim2.new(0, 22, 0, 22)
-On_3.Font = Enum.Font.SourceSans
 On_3.Text = ""
-On_3.TextColor3 = Color3.fromRGB(0, 0, 0)
-On_3.TextSize = 14.000
-On_3.Visible = true
 
 Check_3.Name = "Check"
 Check_3.Parent = On_3
-Check_3.Active = false
 Check_3.BackgroundTransparency = 1.000
-Check_3.BorderSizePixel = 0
-Check_3.Position = UDim2.new(0.1, 0, 0.1, 0)
-Check_3.Size = UDim2.new(0.8, 0, 0.8, 0)
+Check_3.Position = UDim2.new(0.100000001, 0, 0.100000001, 0)
+Check_3.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
 Check_3.Image = "rbxassetid://6031094667"
 Check_3.ImageColor3 = Color3.fromRGB(20, 20, 20)
-Check_3.Visible = true
 
-Info_3.Name = "Info"
-Info_3.Parent = Shadow
-Info_3.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Info_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Info_3.BorderSizePixel = 0
-Info_3.Position = UDim2.new(3.06923079, 0, 0, 0)
-Info_3.Size = UDim2.new(0, 148, 0, 142)
-Info_3.Visible = false
-
-OnOff_3.Name = "On/Off"
-OnOff_3.Parent = Info_3
-OnOff_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OnOff_3.BackgroundTransparency = 1.000
-OnOff_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-OnOff_3.BorderSizePixel = 0
-OnOff_3.Position = UDim2.new(0.0405405387, 0, 0.183098584, 0)
-OnOff_3.Size = UDim2.new(0, 26, 0, 17)
-OnOff_3.Font = Enum.Font.GothamBold
-OnOff_3.Text = "ON"
-OnOff_3.TextColor3 = Color3.fromRGB(13, 255, 0)
-OnOff_3.TextScaled = true
-OnOff_3.TextSize = 14.000
-OnOff_3.TextWrapped = true
-
-Name_6.Name = "Name"
-Name_6.Parent = Info_3
-Name_6.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Name_6.BackgroundTransparency = 1.000
-Name_6.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name_6.BorderSizePixel = 0
-Name_6.Position = UDim2.new(0.0405405387, 0, 0.0140845068, 0)
-Name_6.Size = UDim2.new(0, 70, 0, 26)
-Name_6.Font = Enum.Font.GothamBold
-Name_6.Text = "SHADOW"
-Name_6.TextColor3 = Color3.fromRGB(255, 255, 255)
-Name_6.TextScaled = true
-Name_6.TextSize = 14.000
-Name_6.TextWrapped = true
-
-Information_3.Name = "Information"
-Information_3.Parent = Info_3
-Information_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Information_3.BackgroundTransparency = 1.000
-Information_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Information_3.BorderSizePixel = 0
-Information_3.Position = UDim2.new(0, 0, 0.302816898, 0)
-Information_3.Size = UDim2.new(0, 148, 0, 91)
-Information_3.Font = Enum.Font.GothamBold
-Information_3.Text = "Shadows will impact performance. If you would like better performance you can turn this off, this is only for decor."
-Information_3.TextColor3 = Color3.fromRGB(255, 255, 255)
-Information_3.TextScaled = true
-Information_3.TextSize = 14.000
-Information_3.TextWrapped = true
-
--- ==========================================
--- 4. UNLOAD GUI ROW & BUTTON
--- ==========================================
-Unload.Name = "Unload"
-Unload.Parent = UI
-Unload.Active = true
-Unload.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Unload.BackgroundTransparency = 1.000
-Unload.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Unload.BorderSizePixel = 0
-Unload.Position = UDim2.new(-0.629000008, 0, 6.90000000, 0)
-Unload.Size = UDim2.new(0, 130, 0, 31)
-Unload.Font = Enum.Font.GothamBold
-Unload.Text = "UNLOAD"
-Unload.TextColor3 = Color3.fromRGB(255, 255, 255)
-Unload.TextScaled = true
-Unload.TextSize = 14.000
-Unload.TextWrapped = true
+UnloadRow.Name = "UnloadRow"
+UnloadRow.Parent = UI
+UnloadRow.BackgroundTransparency = 1.000
+UnloadRow.Position = UDim2.new(-0.629000008, 0, 6.9000001, 0)
+UnloadRow.Size = UDim2.new(0, 130, 0, 31)
+UnloadRow.Font = Enum.Font.GothamBold
+UnloadRow.Text = "UNLOAD"
+UnloadRow.TextColor3 = Color3.fromRGB(255, 255, 255)
+UnloadRow.TextScaled = true
+UnloadRow.TextWrapped = true
 
 UnloadBtn.Name = "UnloadBtn"
-UnloadBtn.Parent = Unload
+UnloadBtn.Parent = UnloadRow
 UnloadBtn.BackgroundColor3 = Color3.fromRGB(190, 35, 35)
-UnloadBtn.BorderColor3 = Color3.fromRGB(0, 0, 0)
 UnloadBtn.BorderSizePixel = 0
-UnloadBtn.Position = UDim2.new(2.10000000, 0, 0.05000000, 0)
+UnloadBtn.Position = UDim2.new(2.0999999, 0, 0.0500000007, 0)
 UnloadBtn.Size = UDim2.new(0, 80, 0, 26)
 UnloadBtn.Font = Enum.Font.GothamBold
 UnloadBtn.Text = "UNLOAD"
 UnloadBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 UnloadBtn.TextSize = 12.000
-UnloadBtn.AutoButtonColor = false
 
-UnloadBtnCorner.CornerRadius = UDim.new(0, 6)
-UnloadBtnCorner.Parent = UnloadBtn
+UICorner_11.CornerRadius = UDim.new(0, 6)
+UICorner_11.Parent = UnloadBtn
 
-UnloadBtnStroke.Color = Color3.fromRGB(255, 75, 75)
-UnloadBtnStroke.Thickness = 1
-UnloadBtnStroke.Transparency = 0.35
-UnloadBtnStroke.Parent = UnloadBtn
-
-Info_4.Name = "Info"
-Info_4.Parent = Unload
-Info_4.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-Info_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Info_4.BorderSizePixel = 0
-Info_4.Position = UDim2.new(3.06923079, 0, 0, 0)
-Info_4.Size = UDim2.new(0, 148, 0, 142)
-Info_4.Visible = false
-Info_4.ZIndex = 5
-
-OnOff_4.Name = "On/Off"
-OnOff_4.Parent = Info_4
-OnOff_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-OnOff_4.BackgroundTransparency = 1.000
-OnOff_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
-OnOff_4.BorderSizePixel = 0
-OnOff_4.Position = UDim2.new(0.0405405387, 0, 0.183098584, 0)
-OnOff_4.Size = UDim2.new(0, 60, 0, 17)
-OnOff_4.Font = Enum.Font.GothamBold
-OnOff_4.Text = "CLOSE"
-OnOff_4.TextColor3 = Color3.fromRGB(255, 60, 60)
-OnOff_4.TextScaled = true
-OnOff_4.TextSize = 14.000
-OnOff_4.TextWrapped = true
-
-Name_7.Name = "Name"
-Name_7.Parent = Info_4
-Name_7.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Name_7.BackgroundTransparency = 1.000
-Name_7.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Name_7.BorderSizePixel = 0
-Name_7.Position = UDim2.new(0.0405405387, 0, 0.0140845068, 0)
-Name_7.Size = UDim2.new(0, 95, 0, 26)
-Name_7.Font = Enum.Font.GothamBold
-Name_7.Text = "UNLOAD GUI"
-Name_7.TextColor3 = Color3.fromRGB(255, 255, 255)
-Name_7.TextScaled = true
-Name_7.TextSize = 14.000
-Name_7.TextWrapped = true
-
-Information_4.Name = "Information"
-Information_4.Parent = Info_4
-Information_4.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Information_4.BackgroundTransparency = 1.000
-Information_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Information_4.BorderSizePixel = 0
-Information_4.Position = UDim2.new(0, 0, 0.302816898, 0)
-Information_4.Size = UDim2.new(0, 148, 0, 91)
-Information_4.Font = Enum.Font.GothamBold
-Information_4.Text = "Safely unloads and completely removes the Infinity GUI and all background processes from the game."
-Information_4.TextColor3 = Color3.fromRGB(255, 255, 255)
-Information_4.TextScaled = true
-Information_4.TextSize = 14.000
-Information_4.TextWrapped = true
-
-Line_4.Name = "Line"
-Line_4.Parent = Settings
-Line_4.BackgroundColor3 = Color3.fromRGB(0, 174, 255)
-Line_4.BorderSizePixel = 0
-Line_4.Position = UDim2.new(0.0939999968, 0, 1.10000002, 0)
-Line_4.Size = UDim2.new(0, 75, 0, 1)
-Line_4.Visible = false
-Line_4.Text = ""
-
-Line_5.Name = "Line"
-Line_5.Parent = Main
-Line_5.BackgroundColor3 = Color3.fromRGB(21, 21, 21)
-Line_5.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Line_5.BorderSizePixel = 0
-Line_5.Position = UDim2.new(0.0300751887, 0, 0.17635271, 0)
-Line_5.Size = UDim2.new(0, 375, 0, 5)
-Line_5.Font = Enum.Font.SourceSans
-Line_5.Text = ""
-Line_5.TextColor3 = Color3.fromRGB(0, 0, 0)
-Line_5.TextSize = 14.000
-
-UICorner_11.CornerRadius = UDim.new(0, 25)
-UICorner_11.Parent = Line_5
-
-UIGradient_5.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(30, 28, 26)), ColorSequenceKeypoint.new(0.64, Color3.fromRGB(255, 255, 254)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 255, 255))}
-UIGradient_5.Rotation = 90
-UIGradient_5.Parent = Main
-
--- ==========================================
--- DISCORD NOTIFICATION POPUP (Centered INSIDE Main GUI)
--- ==========================================
+-- DISCORD POPUP NOTIFICATION (Inside Main)
 DiscordPopup.Name = "DiscordPopup"
-DiscordPopup.Parent = Main -- Parented to Main so it centers perfectly inside the GUI window
+DiscordPopup.Parent = Main
 DiscordPopup.AnchorPoint = Vector2.new(0.5, 0.5)
 DiscordPopup.Position = UDim2.new(0.5, 0, 0.5, 0)
 DiscordPopup.Size = UDim2.new(0, 310, 0, 125)
 DiscordPopup.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-DiscordPopup.BorderColor3 = Color3.fromRGB(0, 0, 0)
 DiscordPopup.BorderSizePixel = 0
 DiscordPopup.ClipsDescendants = true
 DiscordPopup.Visible = false
@@ -1525,7 +1182,6 @@ DiscordPopupStroke.Parent = DiscordPopup
 
 PopupLogo.Name = "PopupLogo"
 PopupLogo.Parent = DiscordPopup
-PopupLogo.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 PopupLogo.BackgroundTransparency = 1.000
 PopupLogo.BorderSizePixel = 0
 PopupLogo.Position = UDim2.new(0.04, 0, 0.08, 0)
@@ -1573,7 +1229,7 @@ PopupMsg.BorderSizePixel = 0
 PopupMsg.Position = UDim2.new(0.16, 0, 0.44, 0)
 PopupMsg.Size = UDim2.new(0.80, 0, 0, 36)
 PopupMsg.Font = Enum.Font.GothamBold
-PopupMsg.Text = "You have copied the discord link to your clipboard."
+PopupMsg.Text = "Link copied to clipboard!"
 PopupMsg.TextColor3 = Color3.fromRGB(255, 255, 255)
 PopupMsg.TextSize = 12.500
 PopupMsg.TextWrapped = true
@@ -1593,1029 +1249,442 @@ PopupLink.TextSize = 11.000
 PopupLink.TextXAlignment = Enum.TextXAlignment.Left
 PopupLink.ZIndex = 201
 
--- ==========================================
--- TOP-RIGHT FPS DISPLAY (Modern Grey Box at Top Border)
--- ==========================================
-FpsGui.Name = "FPS_Display"
-FpsGui.Parent = Gui
-FpsGui.AnchorPoint = Vector2.new(1, 0)
-FpsGui.Position = UDim2.new(1, -6, 0, 4)
-FpsGui.Size = UDim2.new(0, 88, 0, 24)
-FpsGui.BackgroundColor3 = Color3.fromRGB(44, 46, 50)
-FpsGui.BackgroundTransparency = 0.050
-FpsGui.BorderSizePixel = 0
-FpsGui.ZIndex = 300
-
-FpsCorner.CornerRadius = UDim.new(0, 5)
-FpsCorner.Parent = FpsGui
-
-FpsStroke.Color = Color3.fromRGB(75, 78, 85)
-FpsStroke.Thickness = 1
-FpsStroke.Transparency = 0.000
-FpsStroke.Parent = FpsGui
-
-FpsDot.Name = "StatusDot"
-FpsDot.Parent = FpsGui
-FpsDot.BackgroundColor3 = Color3.fromRGB(0, 255, 140)
-FpsDot.BorderSizePixel = 0
-FpsDot.Position = UDim2.new(0, 8, 0.5, -3.5)
-FpsDot.Size = UDim2.new(0, 7, 0, 7)
-FpsDot.ZIndex = 301
-
-FpsDotCorner.CornerRadius = UDim.new(1, 0)
-FpsDotCorner.Parent = FpsDot
-
-FpsLabel.Name = "FpsLabel"
-FpsLabel.Parent = FpsGui
-FpsLabel.BackgroundTransparency = 1.000
-FpsLabel.BorderSizePixel = 0
-FpsLabel.Position = UDim2.new(0, 21, 0, 0)
-FpsLabel.Size = UDim2.new(1, -23, 1, 0)
-FpsLabel.Font = Enum.Font.GothamBold
-FpsLabel.Text = "FPS: --"
-FpsLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
-FpsLabel.TextSize = 12.000
-FpsLabel.TextXAlignment = Enum.TextXAlignment.Left
-FpsLabel.ZIndex = 301
-
--- ==========================================
--- FLOATING TOGGLE BUTTON (Draggable Larger Infinity Figure 8)
--- ==========================================
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = Gui
-ToggleButton.AnchorPoint = Vector2.new(0.5, 0)
-ToggleButton.Position = UDim2.new(0.5, 0, 0, 8)
-ToggleButton.Size = UDim2.new(0, 100, 0, 56)
-ToggleButton.BackgroundTransparency = 1.000
-ToggleButton.BorderSizePixel = 0
-ToggleButton.AutoButtonColor = false
-ToggleButton.Active = true
-ToggleButton.Image = "rbxassetid://17894477503"
-ToggleButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.ScaleType = Enum.ScaleType.Fit
-ToggleButton.ZIndex = 400
-
--- Scripts:
-
-local function WXLQN_fake_script() -- Main.LocalScript 
-	local script = Instance.new('LocalScript', Main)
-
-	local Main = script.Parent
-	local SoundService = game:GetService("SoundService")
-	local UserInputService = game:GetService("UserInputService")
-	local TweenService = game:GetService("TweenService")
-	local Players = game:GetService("Players")
-	
-	local localPlayer = Players.LocalPlayer
-	if localPlayer then
-		local homeButton = Main:FindFirstChild("Home")
-		local hFrame = homeButton and homeButton:FindFirstChild("HFrame")
-		local welcomeFrame = hFrame and hFrame:FindFirstChild("Welcome")
-		if welcomeFrame then
-			welcomeFrame.Image = "rbxthumb://type=AvatarHeadShot&id=" .. localPlayer.UserId .. "&w=150&h=150"
-	
-			local playerNameLabel = welcomeFrame:FindFirstChild("PlayerName")
-			if playerNameLabel then
-				playerNameLabel.Text = localPlayer.DisplayName
-			end
-		end
-	end
-	
-	local clickSound = SoundService:FindFirstChild("Click")
-	local hoverSound = SoundService:FindFirstChild("Hover")
-	
-	local blueColor = Color3.fromRGB(0, 174, 255)
-	local whiteColor = Color3.fromRGB(255, 255, 255)
-	
-	local buttons = {
-		Main:FindFirstChild("Home"),
-		Main:FindFirstChild("Game"),
-		Main:FindFirstChild("Server"),
-		Main:FindFirstChild("Settings"),
-	}
-	
-	local activeButton = nil
-	
-	local homeButton = Main:FindFirstChild("Home")
-	local gameButton = Main:FindFirstChild("Game")
-	local serverButton = Main:FindFirstChild("Server")
-	local settingsButton = Main:FindFirstChild("Settings")
-	local hFrame = homeButton and homeButton:FindFirstChild("HFrame")
-	local gFrame = gameButton and gameButton:FindFirstChild("GFrame")
-	local serverFrame = serverButton and serverButton:FindFirstChild("ServerFrame")
-	local sFrame = settingsButton and settingsButton:FindFirstChild("SFrame")
-	
-	if homeButton then
-		local homeLine = homeButton:FindFirstChild("Line")
-		if homeLine then
-			homeLine.Visible = true
-			homeLine.BackgroundColor3 = blueColor
-		end
-		homeButton.TextColor3 = blueColor
-		activeButton = homeButton
-	end
-	
-	if sFrame then sFrame.Visible = false end
-	if serverFrame then serverFrame.Visible = false end
-	if gFrame then gFrame.Visible = false end
-	if hFrame then hFrame.Visible = true end
-	
-	local closeButton = Main:FindFirstChild("Close")
-	if closeButton then
-		closeButton.MouseEnter:Connect(function()
-			if hoverSound and not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-				hoverSound:Play()
-			end
-		end)
-	
-		closeButton.MouseButton1Click:Connect(function()
-			if clickSound then clickSound:Play() end
-		end)
-	end
-	
-	local dragButton = Main:FindFirstChild("DragButton")
-	if dragButton then
-		dragButton.MouseEnter:Connect(function()
-			if hoverSound and not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-				hoverSound:Play()
-			end
-		end)
-	
-		dragButton.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 and clickSound then
-				clickSound:Play()
-			end
-		end)
-	end
-
-	-- Discord Auto-Disappearing Notification Popup (Centered inside Main)
-	local discordLink = "https://discord.gg/PB8bhAHbJE"
-	local activePopupSession = 0
-
-	local function showDiscordNotification()
-		-- Copy Discord link to clipboard
-		pcall(function()
-			if setclipboard then
-				setclipboard(discordLink)
-			elseif toclipboard then
-				toclipboard(discordLink)
-			end
-		end)
-
-		if clickSound then clickSound:Play() end
-
-		activePopupSession = activePopupSession + 1
-		local currentSession = activePopupSession
-
-		-- Appear animation centered inside Main
-		DiscordPopup.Visible = true
-		DiscordPopup.Size = UDim2.new(0, 260, 0, 105)
-		DiscordPopup.Position = UDim2.new(0.5, 0, 0.52, 0)
-
-		local appearTween = TweenService:Create(
-			DiscordPopup,
-			TweenInfo.new(0.22, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-			{
-				Size = UDim2.new(0, 310, 0, 125),
-				Position = UDim2.new(0.5, 0, 0.5, 0)
-			}
-		)
-		appearTween:Play()
-
-		-- Visible for just enough time to read (~2.6 seconds), then automatically disappears
-		task.delay(2.6, function()
-			if activePopupSession == currentSession and DiscordPopup.Visible then
-				local disappearTween = TweenService:Create(
-					DiscordPopup,
-					TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
-					{
-						Size = UDim2.new(0, 250, 0, 95),
-						Position = UDim2.new(0.5, 0, 0.52, 0)
-					}
-				)
-				disappearTween:Play()
-				disappearTween.Completed:Connect(function()
-					if activePopupSession == currentSession then
-						DiscordPopup.Visible = false
-					end
-				end)
-			end
-		end)
-	end
-
-	Discord.MouseButton1Click:Connect(showDiscordNotification)
-
-	Discord.MouseEnter:Connect(function()
-		if hoverSound and not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-			hoverSound:Play()
-		end
-	end)
-	
-	for _, button in ipairs(buttons) do
-		if button then
-			local line = button:FindFirstChild("Line")
-			if line and button ~= activeButton then
-				line.Visible = false
-			end
-	
-			button.MouseEnter:Connect(function()
-				if button ~= activeButton and line then
-					line.Visible = true
-					line.BackgroundColor3 = whiteColor
-				end
-				if hoverSound and not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-					hoverSound:Play()
-				end
-			end)
-	
-			button.MouseLeave:Connect(function()
-				if button ~= activeButton and line then
-					line.Visible = false
-				end
-			end)
-	
-			button.MouseButton1Click:Connect(function()
-				if clickSound then clickSound:Play() end
-	
-				if activeButton and activeButton ~= button then
-					local prevLine = activeButton:FindFirstChild("Line")
-					if prevLine then prevLine.Visible = false end
-					activeButton.TextColor3 = whiteColor
-				end
-	
-				activeButton = button
-				if line then
-					line.Visible = true
-					line.BackgroundColor3 = blueColor
-				end
-				button.TextColor3 = blueColor
-	
-				if button == homeButton then
-					if hFrame then hFrame.Visible = true end
-					if gFrame then gFrame.Visible = false end
-					if serverFrame then serverFrame.Visible = false end
-					if sFrame then sFrame.Visible = false end
-				elseif button == gameButton then
-					if hFrame then hFrame.Visible = false end
-					if gFrame then gFrame.Visible = true end
-					if serverFrame then serverFrame.Visible = false end
-					if sFrame then sFrame.Visible = false end
-				elseif button == serverButton then
-					if hFrame then hFrame.Visible = false end
-					if gFrame then gFrame.Visible = false end
-					if serverFrame then serverFrame.Visible = true end
-					if sFrame then sFrame.Visible = false end
-				elseif button == settingsButton then
-					if hFrame then hFrame.Visible = false end
-					if gFrame then gFrame.Visible = false end
-					if serverFrame then serverFrame.Visible = false end
-					if sFrame then sFrame.Visible = true end
-				end
-			end)
-		end
-	end
-end
-coroutine.wrap(WXLQN_fake_script)()
-
-local function ZFGUM_fake_script() -- Close.LocalScript 
-	local script = Instance.new('LocalScript', Close)
-	local button = script.Parent
-	local main = script.Parent.Parent
-	
-	button.MouseButton1Click:Connect(function()
-		main.Visible = false
-	end)
-	
-	button.MouseEnter:Connect(function()
-		button.Size = UDim2.new(0, 35, 0, 35)
-	end)
-	
-	button.MouseLeave:Connect(function()
-		button.Size = UDim2.new(0, 30, 0, 30)
-	end)
-end
-coroutine.wrap(ZFGUM_fake_script)()
-
--- Draggable GUI Window
-local function DRAG_SCRIPT()
-	local UserInputService = game:GetService("UserInputService")
-	local dragging = false
-	local dragInput, dragStart, startPos
-
-	local function update(input)
-		local delta = input.Position - dragStart
-		Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	end
-
-	DragButton.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = Main.Position
-
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-
-	DragButton.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-
-	UserInputService.InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			update(input)
-		end
-	end)
-
-	DragButton.MouseEnter:Connect(function()
-		DragButton.Size = UDim2.new(0, 35, 0, 35)
-	end)
-	DragButton.MouseLeave:Connect(function()
-		DragButton.Size = UDim2.new(0, 30, 0, 30)
-	end)
-end
-coroutine.wrap(DRAG_SCRIPT)()
 
 -- =========================================================
--- FLOATING DOTS SYSTEM & SETTINGS TOGGLES (Checkmarks inside boxes)
+-- FUNCTIONALITY & CONTROLLER LOGIC
 -- =========================================================
-local fpsConnection = nil
 
-local function SETTINGS_SYSTEM()
-	local TweenService = game:GetService("TweenService")
-	local SoundService = game:GetService("SoundService")
-	local clickSound = SoundService:FindFirstChild("Click")
-
-	local activeTweens = {}
-	local activeDots = {}
-	local maxDots = 28
-	local dotsEnabled = true
-
-	local function createDot(randomStartY)
-		if not dotsEnabled then return end
-
-		local dot = Instance.new("Frame")
-		dot.Name = "ParticleDot"
-		dot.BorderSizePixel = 0
-		dot.BackgroundColor3 = Color3.fromRGB(220, 240, 255)
-		dot.Active = false
-		dot.ZIndex = 1
-
-		local corner = Instance.new("UICorner")
-		corner.CornerRadius = UDim.new(1, 0)
-		corner.Parent = dot
-
-		local size = math.random(3, 7)
-		dot.Size = UDim2.new(0, size, 0, size)
-
-		local startX = math.random(2, 98) / 100
-		local startY = randomStartY or (1.05 + (math.random(0, 10) / 100))
-		local targetY = -0.1
-		local driftX = math.clamp(startX + (math.random(-15, 15) / 100), 0.02, 0.98)
-
-		dot.Position = UDim2.new(startX, 0, startY, 0)
-		dot.BackgroundTransparency = math.random(30, 60) / 100
-		dot.Parent = FloatingDots
-
-		table.insert(activeDots, dot)
-
-		local distance = startY - targetY
-		local duration = (distance / 1.15) * math.random(5, 9)
-
-		local moveTween = TweenService:Create(
-			dot,
-			TweenInfo.new(duration, Enum.EasingStyle.Linear),
-			{
-				Position = UDim2.new(driftX, 0, targetY, 0),
-				BackgroundTransparency = 1
-			}
-		)
-
-		table.insert(activeTweens, moveTween)
-
-		moveTween.Completed:Connect(function()
-			for i, t in ipairs(activeTweens) do
-				if t == moveTween then
-					table.remove(activeTweens, i)
-					break
-				end
-			end
-			for i, d in ipairs(activeDots) do
-				if d == dot then
-					table.remove(activeDots, i)
-					break
-				end
-			end
-			dot:Destroy()
-
-			if dotsEnabled then
-				createDot(false)
-			end
-		end)
-
-		moveTween:Play()
-	end
-
-	local function startDots()
-		dotsEnabled = true
-		for i = 1, maxDots do
-			createDot(math.random(0, 100) / 100)
-		end
-	end
-
-	local function stopDots()
-		dotsEnabled = false
-		for _, tween in ipairs(activeTweens) do
-			pcall(function() tween:Cancel() end)
-		end
-		table.clear(activeTweens)
-
-		for _, dot in ipairs(activeDots) do
-			pcall(function() dot:Destroy() end)
-		end
-		table.clear(activeDots)
-
-		FloatingDots:ClearAllChildren()
-	end
-
-	-- Initialize DOTS particles as ON
-	startDots()
-
-	-- 1. DOTS TOGGLE (Checkmark toggles, box stays visible)
-	local function toggleDots()
-		if clickSound then clickSound:Play() end
-		dotsEnabled = not dotsEnabled
-		Check.Visible = dotsEnabled
-		if dotsEnabled then
-			startDots()
-			OnOff.Text = "ON"
-			OnOff.TextColor3 = Color3.fromRGB(13, 255, 0)
-		else
-			stopDots()
-			OnOff.Text = "OFF"
-			OnOff.TextColor3 = Color3.fromRGB(255, 60, 60)
-		end
-	end
-
-	Box.MouseButton1Click:Connect(toggleDots)
-	On.MouseButton1Click:Connect(toggleDots)
-	Dots.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			toggleDots()
-		end
-	end)
-
-	Dots.MouseEnter:Connect(function() Info.Visible = true end)
-	Dots.MouseLeave:Connect(function() Info.Visible = false end)
-
-	-- 2. GRADIENT TOGGLE (Checkmark toggles, box stays visible)
-	local gradientEnabled = true
-	local function toggleGradient()
-		if clickSound then clickSound:Play() end
-		gradientEnabled = not gradientEnabled
-		Check_2.Visible = gradientEnabled
-		UIGradient_5.Enabled = gradientEnabled
-		OnOff_2.Text = gradientEnabled and "ON" or "OFF"
-		OnOff_2.TextColor3 = gradientEnabled and Color3.fromRGB(13, 255, 0) or Color3.fromRGB(255, 60, 60)
-	end
-	Box_2.MouseButton1Click:Connect(toggleGradient)
-	On_2.MouseButton1Click:Connect(toggleGradient)
-
-	Gradient.MouseEnter:Connect(function() Info_2.Visible = true end)
-	Gradient.MouseLeave:Connect(function() Info_2.Visible = false end)
-
-	-- 3. SHADOW TOGGLE (Checkmark toggles, box stays visible)
-	local shadowEnabled = true
-	local function toggleShadow()
-		if clickSound then clickSound:Play() end
-		shadowEnabled = not shadowEnabled
-		Check_3.Visible = shadowEnabled
-		OnOff_3.Text = shadowEnabled and "ON" or "OFF"
-		OnOff_3.TextColor3 = shadowEnabled and Color3.fromRGB(13, 255, 0) or Color3.fromRGB(255, 60, 60)
-	end
-	Box_3.MouseButton1Click:Connect(toggleShadow)
-	On_3.MouseButton1Click:Connect(toggleShadow)
-
-	Shadow.MouseEnter:Connect(function() Info_3.Visible = true end)
-	Shadow.MouseLeave:Connect(function() Info_3.Visible = false end)
-
-	-- 4. UNLOAD GUI (Safely removes GUI, disconnects FPS counter, stops particles)
-	local function unloadGui()
-		if clickSound then clickSound:Play() end
-
-		if fpsConnection then
-			pcall(function() fpsConnection:Disconnect() end)
-			fpsConnection = nil
-		end
-
-		if stopDots then
-			pcall(stopDots)
-		end
-
-		pcall(function()
-			Gui:Destroy()
-		end)
-	end
-
-	UnloadBtn.MouseButton1Click:Connect(unloadGui)
-	Unload.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			unloadGui()
-		end
-	end)
-
-	UnloadBtn.MouseEnter:Connect(function()
-		UnloadBtn.BackgroundColor3 = Color3.fromRGB(225, 45, 45)
-	end)
-	UnloadBtn.MouseLeave:Connect(function()
-		UnloadBtn.BackgroundColor3 = Color3.fromRGB(190, 35, 35)
-	end)
-
-	Unload.MouseEnter:Connect(function() Info_4.Visible = true end)
-	Unload.MouseLeave:Connect(function() Info_4.Visible = false end)
-end
-coroutine.wrap(SETTINGS_SYSTEM)()
-
--- =========================================================
--- FPS COUNTER SYSTEM (Top Right of Screen)
--- =========================================================
-local function FPS_SYSTEM()
-	local RunService = game:GetService("RunService")
-	local frameCount = 0
-	local lastTime = tick()
-
-	fpsConnection = RunService.RenderStepped:Connect(function()
-		frameCount = frameCount + 1
-		local currentTime = tick()
-		local elapsed = currentTime - lastTime
-
-		if elapsed >= 0.35 then
-			local currentFps = math.floor((frameCount / elapsed) + 0.5)
-			frameCount = 0
-			lastTime = currentTime
-
-			if FpsLabel and FpsLabel.Parent then
-				FpsLabel.Text = string.format("FPS: %d", currentFps)
-				if currentFps >= 50 then
-					FpsLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
-					FpsDot.BackgroundColor3 = Color3.fromRGB(0, 255, 140)
-				elseif currentFps >= 30 then
-					FpsLabel.TextColor3 = Color3.fromRGB(240, 240, 245)
-					FpsDot.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-				else
-					FpsLabel.TextColor3 = Color3.fromRGB(255, 120, 120)
-					FpsDot.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-				end
-			end
-		end
-	end)
-end
-coroutine.wrap(FPS_SYSTEM)()
-
--- Helper to detect any open/running game script loaded from the hub
+-- Helper to find active game script (Ride A Pet)
 local function getActiveGameGui()
-	-- 1. Direct reference check via _G or shared
-	local candidate = _G.ActiveGameScript or shared.ActiveGameScript
-	if candidate and candidate.Gui and candidate.Gui.Parent then
-		local frame = candidate.MainFrame or candidate.Gui:FindFirstChild("MainFrame") or candidate.Gui:FindFirstChild("Main")
-		return candidate.Gui, frame
-	end
+    local candidate = _G.ActiveGameScript or shared.ActiveGameScript
+    if candidate and candidate.Gui and candidate.Gui.Parent then
+        local frame = candidate.MainFrame or candidate.Gui:FindFirstChild("MainFrame") or candidate.Gui:FindFirstChild("Main")
+        return candidate.Gui, frame
+    end
+    if _G.RideAPetGui and _G.RideAPetGui.Parent then
+        local frame = _G.RideAPetMainFrame or _G.RideAPetGui:FindFirstChild("MainFrame") or _G.RideAPetGui:FindFirstChild("Main")
+        return _G.RideAPetGui, frame
+    end
 
-	return nil, nil
+    local names = {"RideAPetStandaloneGui", "RideAPetGui", "Ride-A-Pet", "RideAPet"}
+    local foundGui = nil
+    local foundFrame = nil
+
+    local function searchContainer(container)
+        if foundGui or not container then return end
+        for _, name in ipairs(names) do
+            local s, res = pcall(function()
+                return container:FindFirstChild(name)
+            end)
+            if s and res then
+                foundGui = res
+                pcall(function()
+                    foundFrame = res:FindFirstChild("MainFrame") or res:FindFirstChild("Main") or res:FindFirstChildOfClass("Frame")
+                end)
+                return
+            end
+        end
+    end
+
+    pcall(function() if gethui then searchContainer(gethui()) end end)
+    if not foundGui then pcall(function() searchContainer(game:GetService("CoreGui")) end) end
+    if not foundGui and localPlayer and localPlayer:FindFirstChild("PlayerGui") then
+        pcall(function() searchContainer(localPlayer.PlayerGui) end)
+    end
+    if not foundGui and InfinityHubGui and InfinityHubGui.Parent then
+        pcall(function() searchContainer(InfinityHubGui.Parent) end)
+    end
+
+    return foundGui, foundFrame
 end
 
--- =========================================================
--- FLOATING TOGGLE BUTTON SYSTEM (Drag & Drop + Show/Hide GUI)
--- =========================================================
-local function TOGGLE_BUTTON_SYSTEM()
-	local UserInputService = game:GetService("UserInputService")
-	local SoundService = game:GetService("SoundService")
-	local TweenService = game:GetService("TweenService")
-	local clickSound = SoundService:FindFirstChild("Click")
-	local hoverSound = SoundService:FindFirstChild("Hover")
+-- Tab Switching logic
+local blueColor = Color3.fromRGB(0, 174, 255)
+local whiteColor = Color3.fromRGB(255, 255, 255)
 
-	local isDragging = false
-	local dragStartPos = nil
-	local buttonStartPos = nil
-	local hasMoved = false
+local tabButtons = { Home, Game, Server, Settings }
+local tabFrames = {
+    Home = HFrame,
+    Game = GFrame,
+    Server = ServerFrame,
+    Settings = SFrame
+}
 
-	local function toggleGuiVisibility()
-		if clickSound then clickSound:Play() end
+local activeTabBtn = Home
 
-		-- 1. If Infinity Hub is currently visible on screen, close it
-		if Main.Visible then
-			Main.Visible = false
-			return
-		end
-
-		-- 2. If a game script is currently open/visible on screen, close (hide) it
-		local gameGui, gameMainFrame = getActiveGameGui()
-		if gameGui and gameMainFrame and gameMainFrame.Visible then
-			gameMainFrame.Visible = false
-			Main.Visible = false
-			return
-		end
-
-		-- 3. If a game script was recently open and user closed it via figure 8, reopen it
-		if gameGui and gameMainFrame and not _G.HubInFocus then
-			gameMainFrame.Visible = true
-			Main.Visible = false
-			return
-		end
-
-		-- 4. Otherwise, reopen Infinity Hub
-		_G.HubInFocus = true
-		shared.HubInFocus = true
-		Main.Visible = true
-	end
-
-	-- Hover feedback (tints to neon cyan and smoothly enlarges)
-	ToggleButton.MouseEnter:Connect(function()
-		if hoverSound and not isDragging and not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
-			hoverSound:Play()
-		end
-		TweenService:Create(ToggleButton, TweenInfo.new(0.18), {
-			ImageColor3 = Color3.fromRGB(0, 174, 255),
-			Size = UDim2.new(0, 110, 0, 62)
-		}):Play()
-	end)
-
-	ToggleButton.MouseLeave:Connect(function()
-		TweenService:Create(ToggleButton, TweenInfo.new(0.18), {
-			ImageColor3 = Color3.fromRGB(255, 255, 255),
-			Size = UDim2.new(0, 100, 0, 56)
-		}):Play()
-	end)
-
-	-- Drag & Drop and Click / Tap detection
-	ToggleButton.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			isDragging = true
-			hasMoved = false
-			dragStartPos = input.Position
-			buttonStartPos = ToggleButton.Position
-
-			local endConnection
-			endConnection = input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					isDragging = false
-					if endConnection then
-						endConnection:Disconnect()
-						endConnection = nil
-					end
-
-					if not hasMoved then
-						toggleGuiVisibility()
-					end
-				end
-			end)
-		end
-	end)
-
-	UserInputService.InputChanged:Connect(function(input)
-		if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			local delta = input.Position - dragStartPos
-			if math.abs(delta.X) > 4 or math.abs(delta.Y) > 4 then
-				hasMoved = true
-			end
-			ToggleButton.Position = UDim2.new(
-				buttonStartPos.X.Scale,
-				buttonStartPos.X.Offset + delta.X,
-				buttonStartPos.Y.Scale,
-				buttonStartPos.Y.Offset + delta.Y
-			)
-		end
-	end)
+local function selectTab(btn, frame)
+    if clickSound then clickSound:Play() end
+    for _, b in ipairs(tabButtons) do
+        local l = b:FindFirstChild("Line")
+        if b == btn then
+            b.TextColor3 = blueColor
+            if l then l.Visible = true end
+        else
+            b.TextColor3 = whiteColor
+            if l then l.Visible = false end
+        end
+    end
+    for name, f in pairs(tabFrames) do
+        f.Visible = (f == frame)
+    end
+    SupportHOME.Visible = (frame == HFrame)
+    if frame == ServerFrame and updateSupportStatus then
+        updateSupportStatus()
+    end
+    activeTabBtn = btn
 end
-coroutine.wrap(TOGGLE_BUTTON_SYSTEM)()
 
--- Volume drag bar logic
-local function VOLUME_SYSTEM()
-	local UserInputService = game:GetService("UserInputService")
-	local SoundService = game:GetService("SoundService")
-	local bg = DragBackground
-	local draggingVolume = false
-
-	local clickSound = SoundService:FindFirstChild("Click")
-	local hoverSound = SoundService:FindFirstChild("Hover")
-
-	local function updateVolume(input)
-		local relX = math.clamp((input.Position.X - bg.AbsolutePosition.X) / bg.AbsoluteSize.X, 0, 1)
-		relX = math.floor(relX * 10 + 0.5) / 10
-
-		Drag.Size = UDim2.new(relX, 0, 1, 0)
-		DragCount.Text = tostring(relX)
-
-		if clickSound then clickSound.Volume = 1.25 * relX end
-		if hoverSound then hoverSound.Volume = 0.25 * relX end
-	end
-
-	bg.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			draggingVolume = true
-			updateVolume(input)
-		end
-	end)
-
-	UserInputService.InputEnded:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			draggingVolume = false
-		end
-	end)
-
-	UserInputService.InputChanged:Connect(function(input)
-		if draggingVolume and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			updateVolume(input)
-		end
-	end)
+for _, b in ipairs(tabButtons) do
+    local l = b:FindFirstChild("Line")
+    b.MouseEnter:Connect(function()
+        if b ~= activeTabBtn and l then
+            l.Visible = true
+            l.BackgroundColor3 = whiteColor
+        end
+        if hoverSound and not UserInputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) then
+            hoverSound:Play()
+        end
+    end)
+    b.MouseLeave:Connect(function()
+        if b ~= activeTabBtn and l then
+            l.Visible = false
+            l.BackgroundColor3 = blueColor
+        end
+    end)
 end
-coroutine.wrap(VOLUME_SYSTEM)()
 
--- =========================================================
--- SERVER TAB LOGIC (Game Info, Support Status, Live Metrics & Actions)
--- =========================================================
-local function SERVER_SYSTEM()
-	local MarketplaceService = game:GetService("MarketplaceService")
-	local TeleportService = game:GetService("TeleportService")
-	local HttpService = game:GetService("HttpService")
-	local Players = game:GetService("Players")
-	local SoundService = game:GetService("SoundService")
-	local clickSound = SoundService:FindFirstChild("Click")
+Home.MouseButton1Click:Connect(function() selectTab(Home, HFrame) end)
+Game.MouseButton1Click:Connect(function() selectTab(Game, GFrame) end)
+Server.MouseButton1Click:Connect(function() selectTab(Server, ServerFrame) end)
+Settings.MouseButton1Click:Connect(function() selectTab(Settings, SFrame) end)
 
-	-- Table of games with dedicated/full Infinity Hub support
-	-- (You can add any Place ID or Game ID here!)
-	local supportedHubGames = {
-		[8737899170] = "Pet Simulator 99",
-		[155615604] = "Prison Life",
-		[2753915549] = "Blox Fruits",
-		[4520749081] = "King Legacy",
-		[6872265039] = "BedWars",
-		[189707] = "Natural Disaster Survival",
-		[10042455759] = "Doors",
-		[6516141723] = "Doors",
-		[9285238704] = "Race Clicker",
-		[13775256536] = "Blade Ball",
-		[286090429] = "Arsenal",
-		[1962086868] = "Tower of Hell",
-	}
+-- Initial tab selection
+selectTab(Home, HFrame)
 
-	local placeId = game.PlaceId
-	local detectedGameName = (game.Name ~= "" and game.Name) or ""
+-- Close Button
+Close.MouseButton1Click:Connect(function()
+    if clickSound then clickSound:Play() end
+    Main.Visible = false
+end)
 
-	-- Function to evaluate whether the current game is supported or posted on the GAME page (GFrame)
-	local function checkGameSupported(expName)
-		local curPlaceId = game.PlaceId
-		local curGameId = game.GameId
+-- Window Dragging logic
+local isDragging = false
+local dragStartPos = nil
+local startFramePos = nil
 
-		-- 1. Check supportedHubGames lookup table
-		if supportedHubGames[curPlaceId] or (curGameId and supportedHubGames[curGameId]) then
-			return true
-		end
+DragButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = true
+        dragStartPos = input.Position
+        startFramePos = Main.Position
 
-		-- Normalize detected game name for matching
-		local normDetected = ""
-		if expName and type(expName) == "string" and expName ~= "" then
-			normDetected = string.lower(string.gsub(expName, "[^%w%s]", ""))
-		end
+        local conn
+        conn = input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                isDragging = false
+                if conn then conn:Disconnect() end
+            end
+        end)
+    end
+end)
 
-		-- 2. Inspect GAME page (GFrame) to check if game is posted there
-		if GFrame then
-			local descendants = GFrame:GetDescendants()
-			for _, item in ipairs(descendants) do
-				-- Ignore Search bar and its icon
-				if item ~= Search and item.Name ~= "Search" and item.Name ~= "ImageLabel_2" then
-					-- Check Text properties (TextButton, TextLabel, TextBox)
-					if item:IsA("TextLabel") or item:IsA("TextButton") or item:IsA("TextBox") then
-						local text = item.Text
-						if text and text ~= "" and string.upper(text) ~= "SEARCH" then
-							local lowerText = string.lower(text)
-							-- Match Place ID or Game ID in text
-							if string.find(lowerText, tostring(curPlaceId), 1, true) or (curGameId and string.find(lowerText, tostring(curGameId), 1, true)) then
-								return true
-							end
-							-- Match experience name in text
-							if normDetected ~= "" then
-								local normText = string.lower(string.gsub(text, "[^%w%s]", ""))
-								if normText ~= "" and (string.find(normDetected, normText, 1, true) or string.find(normText, normDetected, 1, true)) then
-									return true
-								end
-							end
-						end
-					end
+UserInputService.InputChanged:Connect(function(input)
+    if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStartPos
+        Main.Position = UDim2.new(
+            startFramePos.X.Scale,
+            startFramePos.X.Offset + delta.X,
+            startFramePos.Y.Scale,
+            startFramePos.Y.Offset + delta.Y
+        )
+    end
+end)
 
-					-- Check Instance name
-					local itemName = item.Name
-					if itemName and itemName ~= "" then
-						if itemName == tostring(curPlaceId) or (curGameId and itemName == tostring(curGameId)) then
-							return true
-						end
-						if normDetected ~= "" and not item:IsA("UIComponent") and not item:IsA("UIStroke") and not item:IsA("UICorner") and not item:IsA("UIGradient") and not item:IsA("UIPadding") and not item:IsA("UIListLayout") and not item:IsA("UIGridLayout") then
-							local normName = string.lower(string.gsub(itemName, "[^%w%s]", ""))
-							if normName ~= "" and (string.find(normDetected, normName, 1, true) or string.find(normName, normDetected, 1, true)) then
-								return true
-							end
-						end
-					end
+-- Toggle Button (Figure 8) Drag & Click
+local btnDragging = false
+local btnMoved = false
+local btnDragStart = nil
+local btnStartPos = nil
 
-					-- Check custom attributes (e.g. PlaceId attribute)
-					pcall(function()
-						local attrs = item:GetAttributes()
-						for _, v in pairs(attrs) do
-							if tostring(v) == tostring(curPlaceId) or (curGameId and tostring(v) == tostring(curGameId)) then
-								return true
-							end
-							if normDetected ~= "" and type(v) == "string" then
-								local normVal = string.lower(string.gsub(v, "[^%w%s]", ""))
-								if normVal ~= "" and (string.find(normDetected, normVal, 1, true) or string.find(normVal, normDetected, 1, true)) then
-									return true
-								end
-							end
-						end
-					end)
-				end
-			end
-		end
+local function toggleVisibility()
+    if clickSound then clickSound:Play() end
+    if Main.Visible then
+        Main.Visible = false
+        return
+    end
 
-		return false
-	end
+    local gameGui, gameMainFrame = getActiveGameGui()
+    if gameGui and gameMainFrame and gameMainFrame.Visible then
+        gameMainFrame.Visible = false
+        Main.Visible = false
+        return
+    end
 
-	-- Function to update badge UI
-	local function updateSupportBadge(supported)
-		if supported then
-			SupportBadge.BackgroundColor3 = Color3.fromRGB(15, 55, 25)
-			SupportBadgeStroke.Color = Color3.fromRGB(0, 255, 140)
-			SupportBadgeText.Text = "🟢 SUPPORTED"
-			SupportBadgeText.TextColor3 = Color3.fromRGB(0, 255, 140)
-			SubtitleLabel.Text = "This experience is supported by Infinity Hub."
-			SubtitleLabel.TextColor3 = Color3.fromRGB(0, 255, 140)
-		else
-			SupportBadge.BackgroundColor3 = Color3.fromRGB(50, 15, 15)
-			SupportBadgeStroke.Color = Color3.fromRGB(255, 60, 60)
-			SupportBadgeText.Text = "🔴 NOT SUPPORTED"
-			SupportBadgeText.TextColor3 = Color3.fromRGB(255, 60, 60)
-			SubtitleLabel.Text = "This experience is not currently supported."
-			SubtitleLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
-		end
-	end
+    if gameGui and gameMainFrame and not _G.HubInFocus then
+        gameMainFrame.Visible = true
+        Main.Visible = false
+        return
+    end
 
-	-- Initial check & badge update
-	local isSupported = checkGameSupported(detectedGameName)
-	updateSupportBadge(isSupported)
-
-	-- 1. Fetch real experience/game name
-	task.spawn(function()
-		local success, productInfo = pcall(function()
-			return MarketplaceService:GetProductInfo(placeId)
-		end)
-		if success and productInfo and productInfo.Name then
-			detectedGameName = productInfo.Name
-			GameNameLabel.Text = productInfo.Name
-		else
-			GameNameLabel.Text = (game.Name ~= "" and game.Name) or ("Place ID: " .. tostring(placeId))
-		end
-
-		-- Re-check with the fetched experience name
-		isSupported = checkGameSupported(detectedGameName)
-		updateSupportBadge(isSupported)
-	end)
-
-	-- Listen for any games dynamically added to the GAME tab (GFrame)
-	if GFrame then
-		GFrame.DescendantAdded:Connect(function()
-			task.wait(0.1)
-			isSupported = checkGameSupported(detectedGameName)
-			updateSupportBadge(isSupported)
-		end)
-		GFrame.DescendantRemoving:Connect(function()
-			task.wait(0.1)
-			isSupported = checkGameSupported(detectedGameName)
-			updateSupportBadge(isSupported)
-		end)
-	end
-
-	-- 3. Live Server Metrics Loop (every 1 second)
-	task.spawn(function()
-		while task.wait(1) do
-			if not Gui or not Gui.Parent then break end
-			-- Live Player Count
-			pcall(function()
-				PlayersLabel.Text = string.format("👥 Players: %d / %s", #Players:GetPlayers(), tostring(Players.MaxPlayers))
-			end)
-			-- Live Ping
-			pcall(function()
-				local ping = 0
-				if localPlayer and localPlayer:GetNetworkPing() then
-					ping = math.floor(localPlayer:GetNetworkPing() * 1000 + 0.5)
-				end
-				if ping == 0 then
-					local perf = game:GetService("Stats"):FindFirstChild("PerformanceStats")
-					if perf and perf:FindFirstChild("Ping") then
-						ping = math.floor(perf.Ping:GetValue())
-					end
-				end
-				PingLabel.Text = string.format("📶 Ping: %d ms", ping)
-			end)
-			-- Live Server Uptime
-			pcall(function()
-				local uptime = math.floor(workspace.DistributedGameTime)
-				local hrs = math.floor(uptime / 3600)
-				local mins = math.floor((uptime % 3600) / 60)
-				local secs = uptime % 60
-				UptimeLabel.Text = string.format("⏱️ Server Uptime: %02dh %02dm %02ds", hrs, mins, secs)
-			end)
-		end
-	end)
-
-	-- 4. Copy Game Session URL Button
-	CopyJobBtn.MouseButton1Click:Connect(function()
-		if clickSound then clickSound:Play() end
-		local sessionUrl = string.format("https://www.roblox.com/games/start?placeId=%d&gameInstanceId=%s", game.PlaceId, game.JobId)
-		pcall(function()
-			if setclipboard then
-				setclipboard(sessionUrl)
-			elseif toclipboard then
-				toclipboard(sessionUrl)
-			end
-		end)
-		CopyJobBtn.Text = "COPIED LINK!"
-		task.delay(1.5, function()
-			if CopyJobBtn and CopyJobBtn.Parent then
-				CopyJobBtn.Text = "Copy game Session"
-			end
-		end)
-	end)
-
-	-- 5. Rejoin Server Button
-	RejoinBtn.MouseButton1Click:Connect(function()
-		if clickSound then clickSound:Play() end
-		RejoinBtn.Text = "REJOINING..."
-		pcall(function()
-			if #Players:GetPlayers() <= 1 then
-				localPlayer:Kick("\n[Infinity Hub] Rejoining server...")
-				task.wait(0.5)
-				TeleportService:Teleport(game.PlaceId, localPlayer)
-			else
-				TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, localPlayer)
-			end
-		end)
-	end)
-
-	-- 6. Server Hop Button
-	ServerHopBtn.MouseButton1Click:Connect(function()
-		if clickSound then clickSound:Play() end
-		ServerHopBtn.Text = "HOPPING..."
-		task.spawn(function()
-			local success, servers = pcall(function()
-				local sfUrl = "https://games.roblox.com/v1/games/" .. tostring(game.PlaceId) .. "/servers/Public?sortOrder=Asc&limit=100"
-				return game:HttpGet(sfUrl)
-			end)
-			if success and servers then
-				local parsed = HttpService:JSONDecode(servers)
-				if parsed and parsed.data then
-					for _, server in ipairs(parsed.data) do
-						if type(server) == "table" and server.id ~= game.JobId and server.playing < server.maxPlayers then
-							TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, localPlayer)
-							return
-						end
-					end
-				end
-			end
-			-- Fallback
-			TeleportService:Teleport(game.PlaceId, localPlayer)
-		end)
-	end)
+    _G.HubInFocus = true
+    shared.HubInFocus = true
+    Main.Visible = true
 end
-coroutine.wrap(SERVER_SYSTEM)()
 
--- =========================================================
--- GAME TAB SEARCH SYSTEM
--- ==========================================
-local function GAME_SEARCH_SYSTEM()
-	if Search and GamesScroll then
-		Search:GetPropertyChangedSignal("Text"):Connect(function()
-			local query = string.lower(Search.Text)
-			for _, item in ipairs(GamesScroll:GetChildren()) do
-				if item:IsA("Frame") then
-					local titleLabel = item:FindFirstChild("Title")
-					if titleLabel and titleLabel:IsA("TextLabel") then
-						if query == "" or string.find(string.lower(titleLabel.Text), query, 1, true) then
-							item.Visible = true
-						else
-							item.Visible = false
-						end
-					end
-				end
-			end
-		end)
-	end
+ToggleButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        btnDragging = true
+        btnMoved = false
+        btnDragStart = input.Position
+        btnStartPos = ToggleButton.Position
+
+        local conn
+        conn = input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                btnDragging = false
+                if conn then conn:Disconnect() end
+                if not btnMoved then
+                    toggleVisibility()
+                end
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if btnDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - btnDragStart
+        if math.abs(delta.X) > 4 or math.abs(delta.Y) > 4 then
+            btnMoved = true
+        end
+        ToggleButton.Position = UDim2.new(
+            btnStartPos.X.Scale,
+            btnStartPos.X.Offset + delta.X,
+            btnStartPos.Y.Scale,
+            btnStartPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- Discord & GitHub Copy Notification
+local function showNotification(url, title)
+    pcall(function()
+        if setclipboard then
+            setclipboard(url)
+        elseif toclipboard then
+            toclipboard(url)
+        end
+    end)
+    if clickSound then clickSound:Play() end
+
+    PopupMsg.Text = "Copied " .. title .. " link to clipboard!"
+    PopupLink.Text = url
+    DiscordPopup.Visible = true
+    DiscordPopup.Size = UDim2.new(0, 260, 0, 105)
+    DiscordPopup.Position = UDim2.new(0.5, 0, 0.52, 0)
+
+    TweenService:Create(DiscordPopup, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Size = UDim2.new(0, 310, 0, 125),
+        Position = UDim2.new(0.5, 0, 0.5, 0)
+    }):Play()
+
+    task.delay(2.6, function()
+        if DiscordPopup.Visible then
+            local t = TweenService:Create(DiscordPopup, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                Size = UDim2.new(0, 250, 0, 95),
+                Position = UDim2.new(0.5, 0, 0.52, 0)
+            })
+            t:Play()
+            t.Completed:Connect(function() DiscordPopup.Visible = false end)
+        end
+    end)
 end
-coroutine.wrap(GAME_SEARCH_SYSTEM)()
+
+DiscordClickBtn.MouseButton1Click:Connect(function()
+    showNotification("https://discord.gg/PB8bhAHbJE", "Discord")
+end)
+
+GithubClickBtn.MouseButton1Click:Connect(function()
+    showNotification("https://github.com/TripNation/infinity-hub", "GitHub")
+end)
+
+
+
+-- Search Bar Filter
+Search:GetPropertyChangedSignal("Text"):Connect(function()
+    local q = string.lower(Search.Text)
+    for _, item in ipairs(ScrollingFrame:GetChildren()) do
+        if item:IsA("Frame") then
+            local title = item:FindFirstChild("Title")
+            if title and title:IsA("TextLabel") then
+                item.Visible = (q == "" or string.find(string.lower(title.Text), q, 1, true) ~= nil)
+            end
+        end
+    end
+end)
+
+-- FPS Counter Loop
+local frameCount = 0
+local lastFpsTime = tick()
+RunService.RenderStepped:Connect(function()
+    frameCount = frameCount + 1
+    local now = tick()
+    local elapsed = now - lastFpsTime
+    if elapsed >= 0.35 then
+        local fps = math.floor((frameCount / elapsed) + 0.5)
+        frameCount = 0
+        lastFpsTime = now
+        if FpsLabel and FpsLabel.Parent then
+            FpsLabel.Text = string.format("FPS: %d", fps)
+            if fps >= 50 then
+                StatusDot.BackgroundColor3 = Color3.fromRGB(0, 255, 140)
+            elseif fps >= 30 then
+                StatusDot.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
+            else
+                StatusDot.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+            end
+        end
+    end
+end)
+
+-- Live Server Metrics
+task.spawn(function()
+    while task.wait(1) do
+        if not InfinityHubGui or not InfinityHubGui.Parent then break end
+        pcall(function()
+            Players_Lbl.Text = string.format("👥 Players: %d / %s", #Players:GetPlayers(), tostring(Players.MaxPlayers))
+            local ping = 0
+            if localPlayer and localPlayer:GetNetworkPing() then
+                ping = math.floor(localPlayer:GetNetworkPing() * 1000 + 0.5)
+            end
+            Ping.Text = string.format("📶 Ping: %d ms", ping)
+            local uptime = math.floor(workspace.DistributedGameTime)
+            local hrs = math.floor(uptime / 3600)
+            local mins = math.floor((uptime % 3600) / 60)
+            local secs = uptime % 60
+            Uptime.Text = string.format("⏱️ Server Uptime: %02dh %02dm %02ds", hrs, mins, secs)
+        end)
+    end
+end)
+
+-- Rejoin & Server Hop
+RejoinBtn.MouseButton1Click:Connect(function()
+    if clickSound then clickSound:Play() end
+    RejoinBtn.Text = "REJOINING..."
+    pcall(function()
+        if #Players:GetPlayers() <= 1 then
+            localPlayer:Kick("\n[Infinity Hub] Rejoining server...")
+            task.wait(0.5)
+            TeleportService:Teleport(game.PlaceId, localPlayer)
+        else
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, localPlayer)
+        end
+    end)
+end)
+
+ServerHopBtn.MouseButton1Click:Connect(function()
+    if clickSound then clickSound:Play() end
+    ServerHopBtn.Text = "HOPPING..."
+    task.spawn(function()
+        local success, servers = pcall(function()
+            local sfUrl = "https://games.roblox.com/v1/games/" .. tostring(game.PlaceId) .. "/servers/Public?sortOrder=Asc&limit=100"
+            return game:HttpGet(sfUrl)
+        end)
+        if success and servers then
+            local parsed = HttpService:JSONDecode(servers)
+            if parsed and parsed.data then
+                for _, s in ipairs(parsed.data) do
+                    if type(s) == "table" and s.id ~= game.JobId and s.playing < s.maxPlayers then
+                        TeleportService:TeleportToPlaceInstance(game.PlaceId, s.id, localPlayer)
+                        return
+                    end
+                end
+            end
+        end
+        TeleportService:Teleport(game.PlaceId, localPlayer)
+    end)
+end)
+
+CopyJobBtn.MouseButton1Click:Connect(function()
+    if clickSound then clickSound:Play() end
+    local sessionUrl = string.format("https://www.roblox.com/games/start?placeId=%d&gameInstanceId=%s", game.PlaceId, game.JobId)
+    pcall(function()
+        if setclipboard then setclipboard(sessionUrl)
+        elseif toclipboard then toclipboard(sessionUrl) end
+    end)
+    CopyJobBtn.Text = "COPIED LINK!"
+    task.delay(1.5, function()
+        if CopyJobBtn and CopyJobBtn.Parent then CopyJobBtn.Text = "Copy game Session" end
+    end)
+end)
+
+-- Settings Toggles
+local dotsOn = true
+local gradientOn = true
+local shadowOn = true
+
+local function setupToggle(btn, onBox, checkImg, callback)
+    local state = true
+    local function toggle()
+        if clickSound then clickSound:Play() end
+        state = not state
+        checkImg.Visible = state
+        if callback then callback(state) end
+    end
+    btn.MouseButton1Click:Connect(toggle)
+    onBox.MouseButton1Click:Connect(toggle)
+end
+
+setupToggle(Box, On, Check, function(state)
+    dotsOn = state
+    FloatingDots.Visible = state
+end)
+
+setupToggle(Box_2, On_2, Check_2, function(state)
+    gradientOn = state
+    UIGradient.Enabled = state
+end)
+
+setupToggle(Box_3, On_3, Check_3, function(state)
+    shadowOn = state
+end)
+
+-- Volume Bar logic
+local draggingVol = false
+DragBackground.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingVol = true
+        local relX = math.clamp((input.Position.X - DragBackground.AbsolutePosition.X) / DragBackground.AbsoluteSize.X, 0, 1)
+        relX = math.floor(relX * 10 + 0.5) / 10
+        Drag.Size = UDim2.new(relX, 0, 1, 0)
+        DragCount.Text = tostring(relX)
+        if clickSound then clickSound.Volume = 1.25 * relX end
+        if hoverSound then hoverSound.Volume = 0.25 * relX end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingVol = false
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if draggingVol and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local relX = math.clamp((input.Position.X - DragBackground.AbsolutePosition.X) / DragBackground.AbsoluteSize.X, 0, 1)
+        relX = math.floor(relX * 10 + 0.5) / 10
+        Drag.Size = UDim2.new(relX, 0, 1, 0)
+        DragCount.Text = tostring(relX)
+        if clickSound then clickSound.Volume = 1.25 * relX end
+        if hoverSound then hoverSound.Volume = 0.25 * relX end
+    end
+end)
+
+-- Unload Button
+UnloadBtn.MouseButton1Click:Connect(function()
+    if clickSound then clickSound:Play() end
+    InfinityHubGui:Destroy()
+end)
 
 -- =========================================================
 -- DYNAMIC GAMES LIST GENERATOR
@@ -2623,9 +1692,6 @@ coroutine.wrap(GAME_SEARCH_SYSTEM)()
 -- creates their cards on the GAME tab in the Hub!
 -- =========================================================
 local function POPULATE_GAMES_SYSTEM()
-	local SoundService = game:GetService("SoundService")
-	local TeleportService = game:GetService("TeleportService")
-	local clickSound = SoundService:FindFirstChild("Click")
 	local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
 	local cacheBuster = "?t=" .. tostring(math.floor(tick()))
 
@@ -2650,12 +1716,12 @@ local function POPULATE_GAMES_SYSTEM()
 		gamesList = defaultGames
 	end
 
-	if not GamesScroll then return end
+	if not ScrollingFrame then return end
 
 	for _, g in ipairs(gamesList) do
 		local card = Instance.new("Frame")
 		card.Name = g.Name .. "Card"
-		card.Parent = GamesScroll
+		card.Parent = ScrollingFrame
 		card.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
 		card.BorderSizePixel = 0
 		card.Size = UDim2.new(1, 0, 0, 72)
@@ -2775,3 +1841,5 @@ local function POPULATE_GAMES_SYSTEM()
 	end
 end
 coroutine.wrap(POPULATE_GAMES_SYSTEM)()
+
+print("✅ [Infinity Hub] Loaded successfully!")
