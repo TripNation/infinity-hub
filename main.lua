@@ -1850,17 +1850,16 @@ print("✅ [Infinity Hub] Loaded successfully!")
 task.spawn(function()
 	local AnnouncementConfig = {
 		ApiUrls = {
+			"https://infinity-admin-ynb5.onrender.com/api/announcements/latest",
 			"https://www.infinityhub.space/api/announcements/latest",
 			"https://infinityhub.space/api/announcements/latest",
-			"https://infinity-admin-ynb5.onrender.com/api/announcements/latest",
 			"http://127.0.0.1:3000/api/announcements/latest",
 			"http://localhost:3000/api/announcements/latest"
 		},
-		PollInterval = 10,
+		PollInterval = 5,
 		HubVersion = "2.1.0",
 		CurrentModule = "Ride A Pet"
 	}
-
 
 	local lastSeenId = nil
 	local activeCard = nil
@@ -1871,29 +1870,27 @@ task.spawn(function()
 			local ok, res = pcall(function()
 				return reqFn({
 					Url = url,
+					url = url,
 					Method = "GET",
-					Headers = { ["Cache-Control"] = "no-cache" }
+					method = "GET",
+					Headers = { ["Cache-Control"] = "no-cache", ["User-Agent"] = "InfinityHub-Roblox/2.1" }
 				})
 			end)
-			if ok and res then
+			if ok and type(res) == "table" then
 				local b = res.Body or res.body
 				if b and b ~= "" and b ~= "null" then return b end
 			end
 		end
 
-		if game.HttpGet then
-			local ok, b = pcall(function()
-				return game:HttpGet(url)
-			end)
-			if ok and b and b ~= "" and b ~= "null" then return b end
-		end
+		local getOk, b = pcall(function()
+			return game:HttpGet(url)
+		end)
+		if getOk and b and b ~= "" and b ~= "null" then return b end
 
-		if HttpService and HttpService.GetAsync then
-			local ok, b = pcall(function()
-				return HttpService:GetAsync(url)
-			end)
-			if ok and b and b ~= "" and b ~= "null" then return b end
-		end
+		local asyncOk, asyncBody = pcall(function()
+			return game:HttpGetAsync(url)
+		end)
+		if asyncOk and asyncBody and asyncBody ~= "" and asyncBody ~= "null" then return asyncBody end
 
 		return nil
 	end
@@ -1983,7 +1980,32 @@ task.spawn(function()
 			activeCard = nil
 		end
 
-		local parentGui = InfinityHubGui or (gethui and gethui()) or game:GetService("CoreGui")
+		local parentGui = InfinityHubGui
+		if not parentGui or not parentGui.Parent then
+			local existing = nil
+			pcall(function()
+				if gethui then existing = gethui():FindFirstChild("InfinityHub_AnnouncementsGui") end
+				if not existing then existing = game:GetService("CoreGui"):FindFirstChild("InfinityHub_AnnouncementsGui") end
+			end)
+			if not existing and localPlayer and localPlayer:FindFirstChild("PlayerGui") then
+				existing = localPlayer.PlayerGui:FindFirstChild("InfinityHub_AnnouncementsGui")
+			end
+			if not existing then
+				local newGui = Instance.new("ScreenGui")
+				newGui.Name = "InfinityHub_AnnouncementsGui"
+				newGui.ResetOnSpawn = false
+				newGui.DisplayOrder = 999999
+				newGui.IgnoreGuiInset = true
+				local ok = false
+				if gethui then pcall(function() newGui.Parent = gethui(); ok = true end) end
+				if not ok then pcall(function() newGui.Parent = game:GetService("CoreGui"); ok = true end) end
+				if not ok and localPlayer and localPlayer:FindFirstChild("PlayerGui") then
+					pcall(function() newGui.Parent = localPlayer.PlayerGui end)
+				end
+				existing = newGui
+			end
+			parentGui = existing
+		end
 
 		-- Sleek Compact Card Container (matching reference)
 		local card = Instance.new("Frame")

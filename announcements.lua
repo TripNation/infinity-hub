@@ -1,54 +1,132 @@
 -- ==============================================================================
 -- INFINITY HUB // LIVE ANNOUNCEMENTS CLIENT MODULE
 -- ==============================================================================
--- Can be required, executed via loadfile, or run directly in your executor.
--- Polls the local/remote Infinity Hub announcement API and displays live popups.
+-- Universal announcement listener for Infinity Hub, Loader, and Game scripts.
+-- Polls the Infinity Hub admin API and displays animated live notifications.
 -- ==============================================================================
-
-if _G.InfinityAnnouncementsActive then
-    return
-end
-_G.InfinityAnnouncementsActive = true
 
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")
 local Players = game:GetService("Players")
+
+-- Safe LocalPlayer resolution
 local localPlayer = Players.LocalPlayer
+if not localPlayer then
+    local startWait = tick()
+    while not localPlayer and (tick() - startWait < 3) do
+        localPlayer = Players.LocalPlayer
+        task.wait(0.1)
+    end
+end
+if not localPlayer then
+    pcall(function()
+        localPlayer = Players:GetPlayers()[1]
+    end)
+end
+
+-- Unique session tracker so re-execution seamlessly replaces old loops
+local currentSession = tick()
+_G.InfinityAnnouncementsSession = currentSession
 
 local InfinityConfig = {
-    -- Primary and fallback URLs
+    -- Endpoints to query: Render direct first (fastest/most reliable SSL in executors), then custom domain
     ApiUrls = {
+        "https://infinity-admin-ynb5.onrender.com/api/announcements/latest",
         "https://www.infinityhub.space/api/announcements/latest",
         "https://infinityhub.space/api/announcements/latest",
-        "https://infinity-admin-ynb5.onrender.com/api/announcements/latest",
         "http://127.0.0.1:3000/api/announcements/latest",
         "http://localhost:3000/api/announcements/latest"
     },
-    PollInterval = 10,
+    PollInterval = 5,
     HubVersion = "2.1.0",
-    CurrentModule = "Ride A Pet",
     DebugMode = true
 }
 
-
 local lastSeenAnnouncementId = nil
 local activePopup = nil
+local announcementsScreenGui = nil
+
+-- Dedicated ScreenGui provider (Crucial: Frames MUST be inside a ScreenGui)
+local function GetAnnouncementGui()
+    if announcementsScreenGui and announcementsScreenGui.Parent then
+        return announcementsScreenGui
+    end
+
+    -- Look for existing GUI to avoid duplicates
+    local existing = nil
+    pcall(function()
+        if gethui then
+            existing = gethui():FindFirstChild("InfinityHub_AnnouncementsGui")
+        end
+    end)
+    pcall(function()
+        if not existing then
+            existing = game:GetService("CoreGui"):FindFirstChild("InfinityHub_AnnouncementsGui")
+        end
+    end)
+    pcall(function()
+        if not existing and localPlayer and localPlayer:FindFirstChild("PlayerGui") then
+            existing = localPlayer.PlayerGui:FindFirstChild("InfinityHub_AnnouncementsGui")
+        end
+    end)
+
+    if existing and existing:IsA("ScreenGui") then
+        announcementsScreenGui = existing
+        return existing
+    end
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "InfinityHub_AnnouncementsGui"
+    gui.ResetOnSpawn = false
+    gui.DisplayOrder = 999999
+    gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    gui.IgnoreGuiInset = true
+
+    local parented = false
+    if gethui then
+        pcall(function()
+            gui.Parent = gethui()
+            parented = true
+        end)
+    end
+    if not parented then
+        pcall(function()
+            gui.Parent = game:GetService("CoreGui")
+            parented = true
+        end)
+    end
+    if not parented then
+        pcall(function()
+            if localPlayer and localPlayer:FindFirstChild("PlayerGui") then
+                gui.Parent = localPlayer.PlayerGui
+                parented = true
+            end
+        end)
+    end
+
+    announcementsScreenGui = gui
+    return gui
+end
 
 -- Universal executor request helper
 local function FetchRaw(url)
-    local reqFn = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
-    
     -- 1. Try modern executor request API
+    local reqFn = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
     if reqFn then
         local ok, res = pcall(function()
             return reqFn({
                 Url = url,
+                url = url,
                 Method = "GET",
-                Headers = { ["Cache-Control"] = "no-cache" }
+                method = "GET",
+                Headers = {
+                    ["Cache-Control"] = "no-cache",
+                    ["User-Agent"] = "InfinityHub-Roblox/2.1"
+                }
             })
         end)
-        if ok and res then
+        if ok and type(res) == "table" then
             local body = res.Body or res.body
             if body and body ~= "" and body ~= "null" then
                 return body
@@ -56,24 +134,20 @@ local function FetchRaw(url)
         end
     end
 
-    -- 2. Try game:HttpGet
-    if game.HttpGet then
-        local ok, body = pcall(function()
-            return game:HttpGet(url)
-        end)
-        if ok and body and body ~= "" and body ~= "null" then
-            return body
-        end
+    -- 2. Try game:HttpGet directly inside pcall
+    local getOk, body = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if getOk and body and body ~= "" and body ~= "null" then
+        return body
     end
 
-    -- 3. Try HttpService:GetAsync
-    if HttpService and HttpService.GetAsync then
-        local ok, body = pcall(function()
-            return HttpService:GetAsync(url)
-        end)
-        if ok and body and body ~= "" and body ~= "null" then
-            return body
-        end
+    -- 3. Try game:HttpGetAsync inside pcall
+    local asyncOk, asyncBody = pcall(function()
+        return game:HttpGetAsync(url)
+    end)
+    if asyncOk and asyncBody and asyncBody ~= "" and asyncBody ~= "null" then
+        return asyncBody
     end
 
     return nil
@@ -98,8 +172,8 @@ local function FetchLatestAnnouncement()
 end
 
 local function GetCurrentGameName()
-    local pId = tostring(game.PlaceId)
-    local uId = tostring(game.GameId)
+    local pId = tostring(game.PlaceId or 0)
+    local uId = tostring(game.GameId or 0)
 
     if pId == "124216119978534" or uId == "10035204815" then
         return "Ride A Pet"
@@ -123,11 +197,11 @@ local function ShouldShowAnnouncement(announcement)
         return false
     end
 
-    local target = string.lower(announcement.target or "everyone")
-    local targetMod = string.lower(announcement.targetModule or "")
+    local target = string.lower(tostring(announcement.target or "everyone"))
+    local targetMod = string.lower(tostring(announcement.targetModule or ""))
 
     -- 1. All games / Everyone
-    if target == "everyone" or targetMod == "" or targetMod == "all" or targetMod == "everyone" then
+    if target == "everyone" or targetMod == "" or targetMod == "all" or targetMod == "everyone" or targetMod == "null" then
         return true
     end
 
@@ -136,41 +210,31 @@ local function ShouldShowAnnouncement(announcement)
 
     -- Ride A Pet
     if string.find(targetMod, "ride", 1, true) or string.find(targetMod, "pet", 1, true) then
-        return string.find(currentGame, "ride", 1, true) or string.find(currentGame, "pet", 1, true)
+        return (string.find(currentGame, "ride", 1, true) ~= nil) or (string.find(currentGame, "pet", 1, true) ~= nil)
     end
 
     -- Escape Tsunami
     if string.find(targetMod, "tsunami", 1, true) or string.find(targetMod, "escape", 1, true) or string.find(targetMod, "brainrot", 1, true) then
-        return string.find(currentGame, "tsunami", 1, true) or string.find(currentGame, "brainrot", 1, true)
+        return (string.find(currentGame, "tsunami", 1, true) ~= nil) or (string.find(currentGame, "brainrot", 1, true) ~= nil)
     end
 
     return string.find(currentGame, targetMod, 1, true) ~= nil
 end
 
-
 -- Display animated announcement card matching reference design
 local function ShowAnnouncementNotification(announcement)
-    local targetParent = _G.InfinityGui or shared.InfinityGui
-    if not targetParent then
-        pcall(function()
-            targetParent = (gethui and gethui()) or game:GetService("CoreGui"):FindFirstChild("InfinityHubGui") or game:GetService("CoreGui")
-        end)
-    end
-
-    if not targetParent and localPlayer and localPlayer:FindFirstChild("PlayerGui") then
-        targetParent = localPlayer.PlayerGui:FindFirstChild("InfinityHubGui") or localPlayer.PlayerGui
-    end
-
-    if not targetParent then
-        targetParent = game:GetService("CoreGui")
+    local screenGui = GetAnnouncementGui()
+    if not screenGui then
+        warn("[Infinity Hub Announcements] ⚠️ Failed to acquire ScreenGui parent.")
+        return
     end
 
     if activePopup and activePopup.Parent then
-        activePopup:Destroy()
+        pcall(function() activePopup:Destroy() end)
         activePopup = nil
     end
 
-    -- Sleek Compact Card Container
+    -- Sleek Compact Card Container (410x64 pill)
     local card = Instance.new("Frame")
     card.Name = "InfinityHub_LiveAnnouncement"
     card.AnchorPoint = Vector2.new(0.5, 0)
@@ -179,7 +243,7 @@ local function ShowAnnouncementNotification(announcement)
     card.BackgroundColor3 = Color3.fromRGB(18, 19, 24)
     card.BorderSizePixel = 0
     card.ZIndex = 9999
-    card.Parent = targetParent
+    card.Parent = screenGui
     activePopup = card
 
     local corner = Instance.new("UICorner")
@@ -195,7 +259,7 @@ local function ShowAnnouncementNotification(announcement)
     local logoHolder = Instance.new("Frame")
     logoHolder.Name = "LogoHolder"
     logoHolder.Size = UDim2.new(0, 38, 0, 38)
-    logoHolder.Position = UDim2.new(0, 12, 0, 10)
+    logoHolder.Position = UDim2.new(0, 12, 0, 13)
     logoHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     logoHolder.BorderSizePixel = 0
     logoHolder.ZIndex = 10000
@@ -239,97 +303,98 @@ local function ShowAnnouncementNotification(announcement)
         dismissBtn.TextColor3 = Color3.fromRGB(140, 145, 160)
     end)
 
-    -- Dynamic Header based on announcement type (e.g., "Infinity Update", "Infinity Warning")
-    local rawType = tostring(announcement.type or "Announcement")
-    local formattedType = rawType:gsub("(%a)([%w_']*)", function(first, rest)
-        return first:upper() .. rest:lower()
-    end)
+    -- Dynamic Header based on announcement type
+    local rawType = tostring(announcement.type or "announcement")
+    local typeLower = string.lower(rawType)
+    local formattedType = string.upper(string.sub(typeLower, 1, 1)) .. string.sub(typeLower, 2)
     if formattedType == "" then formattedType = "Announcement" end
-    local headerText = "Infinity " .. formattedType
 
-    -- Top Header
-    local headerLbl = Instance.new("TextLabel")
-    headerLbl.Name = "Header"
-    headerLbl.Size = UDim2.new(1, -85, 0, 18)
-    headerLbl.Position = UDim2.new(0, 58, 0, 10)
-    headerLbl.BackgroundTransparency = 1
-    headerLbl.Text = headerText
-    headerLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    headerLbl.Font = Enum.Font.GothamBold
-    headerLbl.TextSize = 13
-    headerLbl.TextXAlignment = Enum.TextXAlignment.Left
-    headerLbl.ZIndex = 10000
-    headerLbl.Parent = card
+    local headerLabel = Instance.new("TextLabel")
+    headerLabel.Name = "HeaderLabel"
+    headerLabel.Size = UDim2.new(1, -88, 0, 16)
+    headerLabel.Position = UDim2.new(0, 58, 0, 12)
+    headerLabel.BackgroundTransparency = 1
+    headerLabel.Text = "Infinity " .. formattedType
+    headerLabel.TextColor3 = Color3.fromRGB(155, 125, 255)
+    headerLabel.Font = Enum.Font.GothamBold
+    headerLabel.TextSize = 13
+    headerLabel.TextXAlignment = Enum.TextXAlignment.Left
+    headerLabel.ZIndex = 10002
+    headerLabel.Parent = card
 
-    -- Message: Only the clean announcement message (no game name prefix)
+    -- Message Text
     local msgText = tostring(announcement.message or "")
+    local messageLabel = Instance.new("TextLabel")
+    messageLabel.Name = "MessageLabel"
+    messageLabel.Size = UDim2.new(1, -88, 0, 24)
+    messageLabel.Position = UDim2.new(0, 58, 0, 29)
+    messageLabel.BackgroundTransparency = 1
+    messageLabel.Text = msgText
+    messageLabel.TextColor3 = Color3.fromRGB(220, 222, 230)
+    messageLabel.Font = Enum.Font.GothamMedium
+    messageLabel.TextSize = 12
+    messageLabel.TextXAlignment = Enum.TextXAlignment.Left
+    messageLabel.TextYAlignment = Enum.TextYAlignment.Top
+    messageLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    messageLabel.ZIndex = 10002
+    messageLabel.Parent = card
 
-
-    local msgLbl = Instance.new("TextLabel")
-    msgLbl.Name = "Message"
-    msgLbl.Size = UDim2.new(1, -85, 0, 18)
-    msgLbl.Position = UDim2.new(0, 58, 0, 28)
-    msgLbl.BackgroundTransparency = 1
-    msgLbl.Text = msgText
-    msgLbl.TextColor3 = Color3.fromRGB(180, 185, 195)
-    msgLbl.Font = Enum.Font.GothamMedium
-    msgLbl.TextSize = 11
-    msgLbl.TextTruncate = Enum.TextTruncate.AtEnd
-    msgLbl.TextXAlignment = Enum.TextXAlignment.Left
-    msgLbl.ZIndex = 10000
-    msgLbl.Parent = card
-
-    -- Progress Bar Track
-    local progressTrack = Instance.new("Frame")
-    progressTrack.Name = "ProgressTrack"
-    progressTrack.Size = UDim2.new(1, -24, 0, 3)
-    progressTrack.Position = UDim2.new(0, 12, 1, -7)
-    progressTrack.BackgroundColor3 = Color3.fromRGB(38, 42, 54)
-    progressTrack.BorderSizePixel = 0
-    progressTrack.ZIndex = 10000
-    progressTrack.Parent = card
+    -- Bottom Progress Bar Track
+    local progressBarTrack = Instance.new("Frame")
+    progressBarTrack.Name = "ProgressBarTrack"
+    progressBarTrack.Size = UDim2.new(1, 0, 0, 3)
+    progressBarTrack.Position = UDim2.new(0, 0, 1, -3)
+    progressBarTrack.BackgroundColor3 = Color3.fromRGB(28, 30, 38)
+    progressBarTrack.BorderSizePixel = 0
+    progressBarTrack.ZIndex = 10003
+    progressBarTrack.Parent = card
 
     local trackCorner = Instance.new("UICorner")
     trackCorner.CornerRadius = UDim.new(0, 2)
-    trackCorner.Parent = progressTrack
+    trackCorner.Parent = progressBarTrack
 
-    -- Progress Fill
     local progressFill = Instance.new("Frame")
     progressFill.Name = "ProgressFill"
     progressFill.Size = UDim2.new(1, 0, 1, 0)
-    progressFill.BackgroundColor3 = Color3.fromRGB(230, 235, 245)
+    progressFill.Position = UDim2.new(0, 0, 0, 0)
+    progressFill.BackgroundColor3 = Color3.fromRGB(140, 95, 255)
     progressFill.BorderSizePixel = 0
-    progressFill.ZIndex = 10001
-    progressFill.Parent = progressTrack
+    progressFill.ZIndex = 10004
+    progressFill.Parent = progressBarTrack
 
     local fillCorner = Instance.new("UICorner")
     fillCorner.CornerRadius = UDim.new(0, 2)
     fillCorner.Parent = progressFill
 
+    -- Sound effect
     pcall(function()
         local clickSound = SoundService:FindFirstChild("Click")
         if clickSound then clickSound:Play() end
     end)
 
+    -- Slide Down Animation
     TweenService:Create(card, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, 0, 0, 18)
+        Position = UDim2.new(0.5, 0, 0, 20)
     }):Play()
 
     local isDismissed = false
     local function Dismiss()
         if isDismissed then return end
         isDismissed = true
-        local outTween = TweenService:Create(card, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+        local tweenOut = TweenService:Create(card, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
             Position = UDim2.new(0.5, 0, 0, -85)
         })
-        outTween:Play()
-        outTween.Completed:Connect(function()
-            if card and card.Parent then card:Destroy() end
+        tweenOut:Play()
+        tweenOut.Completed:Connect(function()
+            if card and card.Parent then
+                card:Destroy()
+            end
         end)
     end
 
     dismissBtn.MouseButton1Click:Connect(Dismiss)
 
+    -- Auto dismiss timer with countdown
     local duration = tonumber(announcement.duration)
     if duration == nil or duration > 0 then
         local durSecs = (duration and duration > 0) and duration or 10
@@ -342,18 +407,16 @@ end
 
 -- Start background polling loop
 task.spawn(function()
-    if InfinityConfig.DebugMode then
-        print("[Infinity Hub] 📡 Live Announcement System Active — polling " .. InfinityConfig.ApiUrls[1])
-    end
-
-    while true do
-        pcall(function()
+    print("[Infinity Hub] 📡 Live Announcement System Active")
+    
+    while _G.InfinityAnnouncementsSession == currentSession do
+        local ok, err = pcall(function()
             local announcement = FetchLatestAnnouncement()
             if announcement and announcement.id and announcement.active then
                 if announcement.id ~= lastSeenAnnouncementId then
                     if ShouldShowAnnouncement(announcement) then
                         lastSeenAnnouncementId = announcement.id
-                        print(string.format("[Infinity Hub] 📢 Announcement #%d: '%s'", announcement.id, announcement.title))
+                        print(string.format("[Infinity Hub] 📢 Showing Announcement #%d: '%s'", announcement.id, tostring(announcement.message or "")))
                         ShowAnnouncementNotification(announcement)
                     else
                         lastSeenAnnouncementId = announcement.id
@@ -361,7 +424,12 @@ task.spawn(function()
                 end
             end
         end)
-        task.wait(InfinityConfig.PollInterval or 5)
+        
+        if not ok and InfinityConfig.DebugMode then
+            warn("[Infinity Hub Announcements Error] " .. tostring(err))
+        end
+
+        task.wait(InfinityConfig.PollInterval)
     end
 end)
 
