@@ -5,22 +5,24 @@
 local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
 
 -- Mapping of PlaceId or GameId to the script path or raw URL
--- When you want to support a new game, just add its PlaceId or GameId here!
+-- When you want to support a game, put its ID here!
 local supportedGames = {
-    -- [PlaceId or GameId] = "games/game_script.lua",
+    -- [PlaceId or GameId] = "games/your_script.lua",
     -- Example:
-    -- [8737899170] = "games/pet_sim_99.lua",
-    -- [2753915549] = "games/blox_fruits.lua",
+    -- [155615604] = "games/prison_life.lua",
 }
 
 local placeId = game.PlaceId
 local gameId = game.GameId
 
--- Check if the current game is supported
+-- Check if the current game is in the supported list
 local gameScript = supportedGames[placeId] or supportedGames[gameId]
 
 if gameScript then
-    print(string.format("[Infinity Hub] Supported game detected (ID: %s)! Loading game script...", tostring(placeId)))
+    -- =========================================================
+    -- SUPPORTED GAME: Only load the game script, NEVER the hub
+    -- =========================================================
+    print(string.format("[Infinity Hub] Supported game detected (ID: %s)! Launching game script...", tostring(placeId)))
     
     local url = string.find(gameScript, "^https?://") and gameScript or (baseUrl .. gameScript)
     local success, err = pcall(function()
@@ -28,11 +30,12 @@ if gameScript then
     end)
     
     if not success then
-        warn("[Infinity Hub] Failed to load game script: " .. tostring(err))
-        warn("[Infinity Hub] Falling back to default Hub...")
-        loadstring(game:HttpGet(baseUrl .. "main.lua"))()
+        warn(string.format("[Infinity Hub] Error running script for game %s: %s", tostring(placeId), tostring(err)))
     end
 else
-    print(string.format("[Infinity Hub] Game ID %s is not specifically supported. Loading default hub...", tostring(placeId)))
+    -- =========================================================
+    -- UNSUPPORTED GAME: Fall back and open the default Hub
+    -- =========================================================
+    print(string.format("[Infinity Hub] Game ID %s is not in supported list. Opening default Hub...", tostring(placeId)))
     loadstring(game:HttpGet(baseUrl .. "main.lua"))()
 end
