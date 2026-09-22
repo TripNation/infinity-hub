@@ -127,7 +127,7 @@ local function ShouldShowAnnouncement(announcement)
     return true
 end
 
--- Display animated announcement card
+-- Display animated announcement card matching reference design
 local function ShowAnnouncementNotification(announcement)
     local targetParent = _G.InfinityGui or shared.InfinityGui
     if not targetParent then
@@ -144,125 +144,148 @@ local function ShowAnnouncementNotification(announcement)
         targetParent = game:GetService("CoreGui")
     end
 
-    -- Remove existing popup if any
     if activePopup and activePopup.Parent then
         activePopup:Destroy()
         activePopup = nil
     end
 
+    -- Sleek Compact Card Container
     local card = Instance.new("Frame")
-    card.Name = "InfinityHub_LiveAnnouncement_" .. tostring(announcement.id)
-    card.Size = UDim2.new(0, 380, 0, 115)
-    card.Position = UDim2.new(0.5, -190, 0, -130)
-    card.BackgroundColor3 = Color3.fromRGB(15, 20, 32)
+    card.Name = "InfinityHub_LiveAnnouncement"
+    card.AnchorPoint = Vector2.new(0.5, 0)
+    card.Size = UDim2.new(0, 410, 0, 64)
+    card.Position = UDim2.new(0.5, 0, 0, -85)
+    card.BackgroundColor3 = Color3.fromRGB(18, 19, 24)
     card.BorderSizePixel = 0
     card.ZIndex = 9999
     card.Parent = targetParent
     activePopup = card
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 12)
+    corner.CornerRadius = UDim.new(0, 10)
     corner.Parent = card
 
     local stroke = Instance.new("UIStroke")
-    stroke.Thickness = 1.5
+    stroke.Thickness = 1
+    stroke.Color = Color3.fromRGB(45, 48, 58)
     stroke.Parent = card
 
-    local typeColors = {
-        ["announcement"] = Color3.fromRGB(59, 130, 246),
-        ["update"]       = Color3.fromRGB(139, 92, 246),
-        ["important"]    = Color3.fromRGB(239, 68, 68),
-        ["warning"]      = Color3.fromRGB(245, 158, 11),
-        ["maintenance"]  = Color3.fromRGB(236, 72, 153),
-        ["new script"]   = Color3.fromRGB(16, 185, 129),
-    }
-    local aType = string.lower(announcement.type or "announcement")
-    local accentColor = typeColors[aType] or Color3.fromRGB(139, 92, 246)
-    stroke.Color = accentColor
+    -- Left White Rounded Square
+    local logoHolder = Instance.new("Frame")
+    logoHolder.Name = "LogoHolder"
+    logoHolder.Size = UDim2.new(0, 38, 0, 38)
+    logoHolder.Position = UDim2.new(0, 12, 0, 10)
+    logoHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    logoHolder.BorderSizePixel = 0
+    logoHolder.ZIndex = 10000
+    logoHolder.Parent = card
 
-    -- Type Tag
-    local typeBadge = Instance.new("TextLabel")
-    typeBadge.Size = UDim2.new(0, 95, 0, 18)
-    typeBadge.Position = UDim2.new(0, 14, 0, 10)
-    typeBadge.BackgroundColor3 = accentColor
-    typeBadge.BackgroundTransparency = 0.82
-    typeBadge.Text = string.upper(aType)
-    typeBadge.TextColor3 = accentColor
-    typeBadge.Font = Enum.Font.GothamBold
-    typeBadge.TextSize = 10
-    typeBadge.ZIndex = 10000
-    typeBadge.Parent = card
+    local holderCorner = Instance.new("UICorner")
+    holderCorner.CornerRadius = UDim.new(0, 8)
+    holderCorner.Parent = logoHolder
 
-    local badgeCorner = Instance.new("UICorner")
-    badgeCorner.CornerRadius = UDim.new(0, 4)
-    badgeCorner.Parent = typeBadge
+    -- Infinity Logo
+    local infinityIcon = Instance.new("ImageLabel")
+    infinityIcon.Name = "InfinityIcon"
+    infinityIcon.Size = UDim2.new(0, 26, 0, 20)
+    infinityIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+    infinityIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+    infinityIcon.BackgroundTransparency = 1
+    infinityIcon.BorderSizePixel = 0
+    infinityIcon.Image = "rbxassetid://17894477503"
+    infinityIcon.ImageColor3 = Color3.fromRGB(15, 17, 23)
+    infinityIcon.ScaleType = Enum.ScaleType.Fit
+    infinityIcon.ZIndex = 10001
+    infinityIcon.Parent = logoHolder
 
-    -- Hub Brand Label
-    local brand = Instance.new("TextLabel")
-    brand.Size = UDim2.new(0, 180, 0, 18)
-    brand.Position = UDim2.new(0, 118, 0, 10)
-    brand.BackgroundTransparency = 1
-    brand.Text = "INFINITY HUB ANNOUNCEMENT"
-    brand.TextColor3 = Color3.fromRGB(148, 163, 184)
-    brand.Font = Enum.Font.GothamBold
-    brand.TextSize = 10
-    brand.TextXAlignment = Enum.TextXAlignment.Left
-    brand.ZIndex = 10000
-    brand.Parent = card
-
-    -- Dismiss Button
+    -- Dismiss Button '✕'
     local dismissBtn = Instance.new("TextButton")
-    dismissBtn.Size = UDim2.new(0, 24, 0, 24)
-    dismissBtn.Position = UDim2.new(1, -34, 0, 8)
-    dismissBtn.BackgroundColor3 = Color3.fromRGB(26, 32, 48)
+    dismissBtn.Name = "DismissBtn"
+    dismissBtn.Size = UDim2.new(0, 20, 0, 20)
+    dismissBtn.Position = UDim2.new(1, -26, 0, 8)
+    dismissBtn.BackgroundTransparency = 1
     dismissBtn.Text = "✕"
-    dismissBtn.TextColor3 = Color3.fromRGB(220, 225, 240)
+    dismissBtn.TextColor3 = Color3.fromRGB(130, 135, 150)
     dismissBtn.Font = Enum.Font.GothamBold
-    dismissBtn.TextSize = 12
-    dismissBtn.ZIndex = 10001
+    dismissBtn.TextSize = 11
+    dismissBtn.ZIndex = 10002
     dismissBtn.Parent = card
 
-    local dismissCorner = Instance.new("UICorner")
-    dismissCorner.CornerRadius = UDim.new(0, 6)
-    dismissCorner.Parent = dismissBtn
+    dismissBtn.MouseEnter:Connect(function()
+        dismissBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+    dismissBtn.MouseLeave:Connect(function()
+        dismissBtn.TextColor3 = Color3.fromRGB(130, 135, 150)
+    end)
 
-    -- Title
-    local titleLbl = Instance.new("TextLabel")
-    titleLbl.Size = UDim2.new(1, -44, 0, 22)
-    titleLbl.Position = UDim2.new(0, 14, 0, 32)
-    titleLbl.BackgroundTransparency = 1
-    titleLbl.Text = tostring(announcement.title or "Announcement")
-    titleLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLbl.Font = Enum.Font.GothamBold
-    titleLbl.TextSize = 14
-    titleLbl.TextXAlignment = Enum.TextXAlignment.Left
-    titleLbl.ZIndex = 10000
-    titleLbl.Parent = card
+    -- Top Header: "Infinity Announcements"
+    local headerLbl = Instance.new("TextLabel")
+    headerLbl.Name = "Header"
+    headerLbl.Size = UDim2.new(1, -85, 0, 18)
+    headerLbl.Position = UDim2.new(0, 58, 0, 10)
+    headerLbl.BackgroundTransparency = 1
+    headerLbl.Text = "Infinity Announcements"
+    headerLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    headerLbl.Font = Enum.Font.GothamBold
+    headerLbl.TextSize = 13
+    headerLbl.TextXAlignment = Enum.TextXAlignment.Left
+    headerLbl.ZIndex = 10000
+    headerLbl.Parent = card
 
     -- Message
+    local msgText = tostring(announcement.message or "")
+    if announcement.title and announcement.title ~= "" and announcement.title ~= "Infinity Hub" and announcement.title ~= "Infinity Announcements" then
+        msgText = announcement.title .. ": " .. msgText
+    end
+
     local msgLbl = Instance.new("TextLabel")
-    msgLbl.Size = UDim2.new(1, -28, 0, 48)
-    msgLbl.Position = UDim2.new(0, 14, 0, 56)
+    msgLbl.Name = "Message"
+    msgLbl.Size = UDim2.new(1, -85, 0, 18)
+    msgLbl.Position = UDim2.new(0, 58, 0, 28)
     msgLbl.BackgroundTransparency = 1
-    msgLbl.Text = tostring(announcement.message or "")
-    msgLbl.TextColor3 = Color3.fromRGB(203, 213, 225)
-    msgLbl.Font = Enum.Font.Gotham
-    msgLbl.TextSize = 12
-    msgLbl.TextWrapped = true
+    msgLbl.Text = msgText
+    msgLbl.TextColor3 = Color3.fromRGB(180, 185, 195)
+    msgLbl.Font = Enum.Font.GothamMedium
+    msgLbl.TextSize = 11
+    msgLbl.TextTruncate = Enum.TextTruncate.AtEnd
     msgLbl.TextXAlignment = Enum.TextXAlignment.Left
-    msgLbl.TextYAlignment = Enum.TextYAlignment.Top
     msgLbl.ZIndex = 10000
     msgLbl.Parent = card
 
-    -- Play sound if exists
+    -- Progress Bar Track
+    local progressTrack = Instance.new("Frame")
+    progressTrack.Name = "ProgressTrack"
+    progressTrack.Size = UDim2.new(1, -24, 0, 3)
+    progressTrack.Position = UDim2.new(0, 12, 1, -7)
+    progressTrack.BackgroundColor3 = Color3.fromRGB(38, 42, 54)
+    progressTrack.BorderSizePixel = 0
+    progressTrack.ZIndex = 10000
+    progressTrack.Parent = card
+
+    local trackCorner = Instance.new("UICorner")
+    trackCorner.CornerRadius = UDim.new(0, 2)
+    trackCorner.Parent = progressTrack
+
+    -- Progress Fill
+    local progressFill = Instance.new("Frame")
+    progressFill.Name = "ProgressFill"
+    progressFill.Size = UDim2.new(1, 0, 1, 0)
+    progressFill.BackgroundColor3 = Color3.fromRGB(230, 235, 245)
+    progressFill.BorderSizePixel = 0
+    progressFill.ZIndex = 10001
+    progressFill.Parent = progressTrack
+
+    local fillCorner = Instance.new("UICorner")
+    fillCorner.CornerRadius = UDim.new(0, 2)
+    fillCorner.Parent = progressFill
+
     pcall(function()
         local clickSound = SoundService:FindFirstChild("Click")
         if clickSound then clickSound:Play() end
     end)
 
-    -- Slide In
-    TweenService:Create(card, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-        Position = UDim2.new(0.5, -190, 0, 20)
+    TweenService:Create(card, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+        Position = UDim2.new(0.5, 0, 0, 18)
     }):Play()
 
     local isDismissed = false
@@ -270,7 +293,7 @@ local function ShowAnnouncementNotification(announcement)
         if isDismissed then return end
         isDismissed = true
         local outTween = TweenService:Create(card, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-            Position = UDim2.new(0.5, -190, 0, -140)
+            Position = UDim2.new(0.5, 0, 0, -85)
         })
         outTween:Play()
         outTween.Completed:Connect(function()
@@ -280,13 +303,13 @@ local function ShowAnnouncementNotification(announcement)
 
     dismissBtn.MouseButton1Click:Connect(Dismiss)
 
-    -- Auto Dismiss Timer
     local duration = tonumber(announcement.duration)
     if duration == nil or duration > 0 then
         local durSecs = (duration and duration > 0) and duration or 10
-        task.delay(durSecs, function()
-            Dismiss()
-        end)
+        TweenService:Create(progressFill, TweenInfo.new(durSecs, Enum.EasingStyle.Linear), {
+            Size = UDim2.new(0, 0, 1, 0)
+        }):Play()
+        task.delay(durSecs, Dismiss)
     end
 end
 
