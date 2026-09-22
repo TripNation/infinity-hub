@@ -22,6 +22,17 @@ local Players = game:GetService("Players")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 
+-- Live Announcements System
+pcall(function()
+    if not _G.InfinityAnnouncementsActive then
+        task.spawn(function()
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/TripNation/infinity-hub/main/announcements.lua"))()
+            end)
+        end)
+    end
+end)
+
 local clickSound = SoundService:FindFirstChild("Click")
 local hoverSound = SoundService:FindFirstChild("Hover")
 

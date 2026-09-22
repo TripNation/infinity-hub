@@ -15,6 +15,17 @@ local Lighting = game:GetService("Lighting")
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 
+-- Live Announcements System
+pcall(function()
+    if not _G.InfinityAnnouncementsActive then
+        task.spawn(function()
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/TripNation/infinity-hub/main/announcements.lua"))()
+            end)
+        end)
+    end
+end)
+
 -- 2. Local Player Resolution (Non-blocking & foolproof)
 local localPlayer = Players.LocalPlayer
 if not localPlayer then

@@ -5,6 +5,11 @@
 -- Polls the local/remote Infinity Hub announcement API and displays live popups.
 -- ==============================================================================
 
+if _G.InfinityAnnouncementsActive then
+    return
+end
+_G.InfinityAnnouncementsActive = true
+
 local HttpService = game:GetService("HttpService")
 local TweenService = game:GetService("TweenService")
 local SoundService = game:GetService("SoundService")

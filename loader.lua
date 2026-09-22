@@ -16,6 +16,15 @@ local currentGameId  = tostring(game.GameId or 0)
 print(string.format("[Infinity Hub Loader] Detected PlaceId: %s | UniverseId: %s", currentPlaceId, currentGameId))
 
 -- =========================================================
+-- Launch Live Announcements System in background
+-- =========================================================
+task.spawn(function()
+    pcall(function()
+        loadstring(game:HttpGet(baseUrl .. "announcements.lua"))()
+    end)
+end)
+
+-- =========================================================
 -- Hardcoded Fallback Registry
 -- Guarantees instant matching even if GitHub CDN is stale
 -- =========================================================
