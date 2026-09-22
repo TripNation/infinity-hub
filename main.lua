@@ -2000,13 +2000,21 @@ task.spawn(function()
 			dismissBtn.TextColor3 = Color3.fromRGB(140, 145, 160)
 		end)
 
-		-- Top Header: "Infinity Announcements"
+		-- Dynamic Header based on announcement type (e.g., "Infinity Update", "Infinity Warning")
+		local rawType = tostring(announcement.type or "Announcement")
+		local formattedType = rawType:gsub("(%a)([%w_']*)", function(first, rest)
+			return first:upper() .. rest:lower()
+		end)
+		if formattedType == "" then formattedType = "Announcement" end
+		local headerText = "Infinity " .. formattedType
+
+		-- Top Header
 		local headerLbl = Instance.new("TextLabel")
 		headerLbl.Name = "Header"
 		headerLbl.Size = UDim2.new(1, -85, 0, 18)
 		headerLbl.Position = UDim2.new(0, 58, 0, 10)
 		headerLbl.BackgroundTransparency = 1
-		headerLbl.Text = "Infinity Announcements"
+		headerLbl.Text = headerText
 		headerLbl.TextColor3 = Color3.fromRGB(255, 255, 255)
 		headerLbl.Font = Enum.Font.GothamBold
 		headerLbl.TextSize = 13
@@ -2016,7 +2024,7 @@ task.spawn(function()
 
 		-- Bottom Message: Announcement message
 		local msgText = tostring(announcement.message or "")
-		if announcement.title and announcement.title ~= "" and announcement.title ~= "Infinity Hub" and announcement.title ~= "Infinity Announcements" then
+		if announcement.title and announcement.title ~= "" and announcement.title ~= "Infinity Hub" and announcement.title ~= "Infinity Announcements" and announcement.title ~= headerText then
 			msgText = announcement.title .. ": " .. msgText
 		end
 
