@@ -202,9 +202,7 @@ end
 
 local function GetClientParams(extra)
     local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
-    local playerName = (localPlayer and (localPlayer.DisplayName or localPlayer.Name)) or "RobloxPlayer"
-    local gameName = GetCurrentGameName()
-    local str = "src=roblox&cid=" .. UrlEncode(clientId) .. "&user=" .. UrlEncode(playerName) .. "&game=" .. UrlEncode(gameName)
+    local str = "src=roblox&cid=" .. UrlEncode(clientId)
     if extra and extra ~= "" then
         str = str .. "&" .. extra
     end
@@ -216,10 +214,15 @@ if _G.InfinityHubLeaveHook then
     pcall(_G.InfinityHubLeaveHook)
 end
 _G.InfinityHubLeaveHook = function()
+    _G.InfinityHubExecutionTracked = false
     local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
     local leaveQ = "?leave=1&src=roblox&cid=" .. UrlEncode(clientId)
-    pcall(function() FetchRaw("https://www.infinityhub.space/api/stats/ping" .. leaveQ) end)
-    pcall(function() FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping" .. leaveQ) end)
+    pcall(function()
+        local ok = FetchRaw("https://www.infinityhub.space/api/stats/ping" .. leaveQ)
+        if not ok then
+            FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping" .. leaveQ)
+        end
+    end)
 end
 
 pcall(function()
@@ -230,14 +233,19 @@ pcall(function()
     end)
 end)
 
--- Send execution telemetry ping on script injection
-task.spawn(function()
-    pcall(function()
-        local q = "?" .. GetClientParams("init=1")
-        FetchRaw("https://www.infinityhub.space/api/stats/ping" .. q)
-        FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping" .. q)
+-- Send execution telemetry ping on script injection (exactly once per execution session)
+if not _G.InfinityHubExecutionTracked then
+    _G.InfinityHubExecutionTracked = true
+    task.spawn(function()
+        pcall(function()
+            local q = "?" .. GetClientParams("init=1")
+            local res = FetchRaw("https://www.infinityhub.space/api/stats/ping" .. q)
+            if not res then
+                FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping" .. q)
+            end
+        end)
     end)
-end)
+end
 
 -- Fetch latest announcement trying fallback endpoints
 local function FetchLatestAnnouncement()
