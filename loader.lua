@@ -7,6 +7,7 @@ local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/
 -- Mapping of PlaceId or GameId to the script path or raw URL
 -- When you want to support a new game, just add its PlaceId or GameId here!
 local supportedGames = {
+    [124216119978534] = "games/Ride A Pet.lua",
     -- [PlaceId or GameId] = "games/game_script.lua",
     -- Example:
     -- [8737899170] = "games/pet_sim_99.lua",
