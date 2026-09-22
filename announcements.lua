@@ -16,6 +16,7 @@ local InfinityConfig = {
     ApiUrls = {
         "https://www.infinityhub.space/api/announcements/latest",
         "https://infinityhub.space/api/announcements/latest",
+        "https://infinity-admin-ynb5.onrender.com/api/announcements/latest",
         "http://127.0.0.1:3000/api/announcements/latest",
         "http://localhost:3000/api/announcements/latest"
     },
