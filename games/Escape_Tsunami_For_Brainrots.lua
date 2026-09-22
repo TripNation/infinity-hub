@@ -2302,63 +2302,38 @@ end)
 local ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "InfinityToggleButton"
 ToggleButton.Parent = StandaloneGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(18, 20, 26)
+ToggleButton.AnchorPoint = Vector2.new(0.5, 0)
+ToggleButton.BackgroundTransparency = 1.000
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Position = UDim2.new(0, 16, 0.5, -24)
-ToggleButton.Size = UDim2.new(0, 48, 0, 48)
-ToggleButton.ZIndex = 20
-ToggleButton.AutoButtonColor = false
-
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(1, 0)
-ToggleCorner.Parent = ToggleButton
-
-local ToggleStroke = Instance.new("UIStroke")
-ToggleStroke.Color = Color3.fromRGB(0, 170, 255)
-ToggleStroke.Thickness = 1.5
-ToggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-ToggleStroke.Parent = ToggleButton
-
-local ToggleIcon = Instance.new("ImageLabel")
-ToggleIcon.Name = "InfinityIcon"
-ToggleIcon.Parent = ToggleButton
-ToggleIcon.BackgroundTransparency = 1
-ToggleIcon.BorderSizePixel = 0
-ToggleIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-ToggleIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
-ToggleIcon.Size = UDim2.new(0, 32, 0, 22)
-ToggleIcon.Image = "rbxassetid://17894477503"
-ToggleIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
-ToggleIcon.ScaleType = Enum.ScaleType.Fit
-ToggleIcon.ZIndex = 21
-
-ToggleButton.MouseEnter:Connect(function()
-    TweenService:Create(ToggleStroke, TweenInfo.new(0.2), { Color = Color3.fromRGB(70, 205, 255) }):Play()
-    TweenService:Create(ToggleButton, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(25, 28, 38) }):Play()
-end)
-ToggleButton.MouseLeave:Connect(function()
-    TweenService:Create(ToggleStroke, TweenInfo.new(0.2), { Color = Color3.fromRGB(0, 170, 255) }):Play()
-    TweenService:Create(ToggleButton, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(18, 20, 26) }):Play()
-end)
+ToggleButton.Position = UDim2.new(0.5, 0, 0, 8)
+ToggleButton.Size = UDim2.new(0, 100, 0, 56)
+ToggleButton.ZIndex = 400
+ToggleButton.Image = "rbxassetid://17894477503"
+ToggleButton.ScaleType = Enum.ScaleType.Fit
+ToggleButton.Active = true
 
 -- Draggable Toggle Button Logic
 local isToggleDragging = false
 local toggleDragStart = nil
 local toggleStartPos = nil
+local toggleMoved = false
 
 ToggleButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         isToggleDragging = true
+        toggleMoved = false
         toggleDragStart = input.Position
         toggleStartPos = ToggleButton.Position
 
         local conn
         conn = input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
-                task.delay(0.05, function()
-                    isToggleDragging = false
-                end)
+                isToggleDragging = false
                 if conn then conn:Disconnect() end
+                if not toggleMoved then
+                    if clickSound then clickSound:Play() end
+                    MainFrame.Visible = not MainFrame.Visible
+                end
             end
         end)
     end
@@ -2367,6 +2342,9 @@ end)
 UserInputService.InputChanged:Connect(function(input)
     if isToggleDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - toggleDragStart
+        if math.abs(delta.X) > 4 or math.abs(delta.Y) > 4 then
+            toggleMoved = true
+        end
         ToggleButton.Position = UDim2.new(
             toggleStartPos.X.Scale,
             toggleStartPos.X.Offset + delta.X,
@@ -2374,15 +2352,6 @@ UserInputService.InputChanged:Connect(function(input)
             toggleStartPos.Y.Offset + delta.Y
         )
     end
-end)
-
-local toggleDebounce = false
-ToggleButton.MouseButton1Click:Connect(function()
-    if isToggleDragging or toggleDebounce then return end
-    toggleDebounce = true
-    if clickSound then clickSound:Play() end
-    MainFrame.Visible = not MainFrame.Visible
-    task.delay(0.2, function() toggleDebounce = false end)
 end)
 
 -- Keybind Toggles (RightControl or RightShift)
