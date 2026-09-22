@@ -111,10 +111,19 @@ task.spawn(function()
         return nil
     end
 
+    -- Send execution telemetry ping on script injection
+    task.spawn(function()
+        pcall(function()
+            local cid = tostring((localPlayer and localPlayer.UserId) or tick())
+            FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping?init=1&cid=" .. cid)
+        end)
+    end)
+
     local function FetchLatestAnnouncement()
         local timestamp = tostring(math.floor(tick() * 1000))
+        local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
         for _, baseUrl in ipairs(ApiUrls) do
-            local url = baseUrl .. "?_t=" .. timestamp
+            local url = baseUrl .. "?_t=" .. timestamp .. "&cid=" .. clientId
             local raw = FetchRaw(url)
             if raw then
                 local decodeOk, data = pcall(function() return HttpService:JSONDecode(raw) end)
