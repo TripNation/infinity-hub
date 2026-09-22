@@ -147,7 +147,7 @@ end
 task.spawn(function()
     pcall(function()
         local cid = tostring((localPlayer and localPlayer.UserId) or tick())
-        FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping?init=1&cid=" .. cid)
+        FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping?init=1&src=roblox&cid=" .. cid)
     end)
 end)
 
@@ -156,7 +156,7 @@ local function FetchLatestAnnouncement()
     local timestamp = tostring(math.floor(tick() * 1000))
     local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
     for _, baseUrl in ipairs(InfinityConfig.ApiUrls) do
-        local url = baseUrl .. "?_t=" .. timestamp .. "&cid=" .. clientId
+        local url = baseUrl .. "?_t=" .. timestamp .. "&src=roblox&cid=" .. clientId
         local raw = FetchRaw(url)
         if raw then
             local decodeOk, data = pcall(function()
