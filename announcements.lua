@@ -198,16 +198,16 @@ local function ShowAnnouncementNotification(announcement)
     infinityIcon.ZIndex = 10001
     infinityIcon.Parent = logoHolder
 
-    -- Dismiss Button '✕'
+    -- Dismiss Button 'X'
     local dismissBtn = Instance.new("TextButton")
     dismissBtn.Name = "DismissBtn"
     dismissBtn.Size = UDim2.new(0, 20, 0, 20)
     dismissBtn.Position = UDim2.new(1, -26, 0, 8)
     dismissBtn.BackgroundTransparency = 1
-    dismissBtn.Text = "✕"
-    dismissBtn.TextColor3 = Color3.fromRGB(130, 135, 150)
+    dismissBtn.Text = "X"
+    dismissBtn.TextColor3 = Color3.fromRGB(140, 145, 160)
     dismissBtn.Font = Enum.Font.GothamBold
-    dismissBtn.TextSize = 11
+    dismissBtn.TextSize = 12
     dismissBtn.ZIndex = 10002
     dismissBtn.Parent = card
 
@@ -215,7 +215,7 @@ local function ShowAnnouncementNotification(announcement)
         dismissBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     end)
     dismissBtn.MouseLeave:Connect(function()
-        dismissBtn.TextColor3 = Color3.fromRGB(130, 135, 150)
+        dismissBtn.TextColor3 = Color3.fromRGB(140, 145, 160)
     end)
 
     -- Top Header: "Infinity Announcements"
