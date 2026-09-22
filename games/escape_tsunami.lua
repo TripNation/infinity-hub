@@ -2299,21 +2299,18 @@ end)
 -- =========================================================
 -- 21. FLOATING DRAGGABLE TOGGLE BUTTON (Open / Close Menu)
 -- =========================================================
-local ToggleButton = Instance.new("TextButton")
+local ToggleButton = Instance.new("ImageButton")
 ToggleButton.Name = "InfinityToggleButton"
 ToggleButton.Parent = StandaloneGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(24, 25, 30)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(18, 20, 26)
 ToggleButton.BorderSizePixel = 0
-ToggleButton.Position = UDim2.new(0, 16, 0.5, -20)
-ToggleButton.Size = UDim2.new(0, 115, 0, 36)
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.Text = "🌊 INFINITY"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 13.000
+ToggleButton.Position = UDim2.new(0, 16, 0.5, -24)
+ToggleButton.Size = UDim2.new(0, 48, 0, 48)
 ToggleButton.ZIndex = 20
+ToggleButton.AutoButtonColor = false
 
 local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 8)
+ToggleCorner.CornerRadius = UDim.new(1, 0)
 ToggleCorner.Parent = ToggleButton
 
 local ToggleStroke = Instance.new("UIStroke")
@@ -2321,6 +2318,28 @@ ToggleStroke.Color = Color3.fromRGB(0, 170, 255)
 ToggleStroke.Thickness = 1.5
 ToggleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 ToggleStroke.Parent = ToggleButton
+
+local ToggleIcon = Instance.new("ImageLabel")
+ToggleIcon.Name = "InfinityIcon"
+ToggleIcon.Parent = ToggleButton
+ToggleIcon.BackgroundTransparency = 1
+ToggleIcon.BorderSizePixel = 0
+ToggleIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+ToggleIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
+ToggleIcon.Size = UDim2.new(0, 32, 0, 22)
+ToggleIcon.Image = "rbxassetid://17894477503"
+ToggleIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+ToggleIcon.ScaleType = Enum.ScaleType.Fit
+ToggleIcon.ZIndex = 21
+
+ToggleButton.MouseEnter:Connect(function()
+    TweenService:Create(ToggleStroke, TweenInfo.new(0.2), { Color = Color3.fromRGB(70, 205, 255) }):Play()
+    TweenService:Create(ToggleButton, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(25, 28, 38) }):Play()
+end)
+ToggleButton.MouseLeave:Connect(function()
+    TweenService:Create(ToggleStroke, TweenInfo.new(0.2), { Color = Color3.fromRGB(0, 170, 255) }):Play()
+    TweenService:Create(ToggleButton, TweenInfo.new(0.2), { BackgroundColor3 = Color3.fromRGB(18, 20, 26) }):Play()
+end)
 
 -- Draggable Toggle Button Logic
 local isToggleDragging = false
@@ -2380,7 +2399,7 @@ selectTab("Main")
 pcall(function()
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Infinity Hub",
-        Text = "Loaded! Click 🌊 INFINITY or press RightShift to toggle.",
+        Text = "Loaded! Click Infinity button or press RightShift to toggle.",
         Duration = 6
     })
 end)
