@@ -1,4 +1,3 @@
--- Clean up any existing instance if re-injecting
 pcall(function()
     if _G.InfinityGui and typeof(_G.InfinityGui) == "Instance" then
         _G.InfinityGui:Destroy()
