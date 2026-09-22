@@ -3,34 +3,49 @@
 -- =========================================================
 
 local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
+local cacheBuster = "?t=" .. tostring(math.floor(tick()))
 
--- Supported Games Table
--- Maps PlaceId OR GameId (UniverseId) to the script path
-local supportedGames = {
-    -- Ride A Pet (Place ID and Universe ID)
+-- Fallback games if fetching config fails
+local fallbackGames = {
     [124216119978534] = "games/ride_a_pet.lua",
     [10035204815] = "games/ride_a_pet.lua",
-    ["124216119978534"] = "games/ride_a_pet.lua",
-    ["10035204815"] = "games/ride_a_pet.lua",
 }
+
+-- Fetch central games list from games_config.lua
+local supportedGames = {}
+local configSuccess, configData = pcall(function()
+    return loadstring(game:HttpGet(baseUrl .. "games_config.lua" .. cacheBuster))()
+end)
+
+if configSuccess and type(configData) == "table" then
+    for _, g in ipairs(configData) do
+        if g.PlaceId then
+            supportedGames[g.PlaceId] = g.Script
+            supportedGames[tostring(g.PlaceId)] = g.Script
+        end
+        if g.UniverseId then
+            supportedGames[g.UniverseId] = g.Script
+            supportedGames[tostring(g.UniverseId)] = g.Script
+        end
+    end
+else
+    supportedGames = fallbackGames
+end
 
 local placeId = game.PlaceId
 local gameId = game.GameId
 
--- Check both PlaceId and Universe/GameId as number and string
+-- Check both PlaceId and Universe/GameId
 local gameScript = supportedGames[placeId] 
     or supportedGames[tostring(placeId)] 
     or supportedGames[gameId] 
     or supportedGames[tostring(gameId)]
 
--- Timestamp to bypass GitHub CDN cache
-local cacheBuster = "?t=" .. tostring(math.floor(tick()))
-
 if gameScript then
     -- =========================================================
     -- SUPPORTED GAME: Strictly only launch the game script
     -- =========================================================
-    print(string.format("[Infinity Hub] Supported game detected! PlaceId: %s | UniverseId: %s", tostring(placeId), tostring(gameId)))
+    print(string.format("[Infinity Hub] Supported game detected! PlaceId: %s | UniverseId: %s. Launching %s...", tostring(placeId), tostring(gameId), tostring(gameScript)))
     
     local url = string.find(gameScript, "^https?://") and gameScript or (baseUrl .. gameScript)
     url = url .. cacheBuster

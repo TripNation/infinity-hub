@@ -2616,3 +2616,162 @@ local function GAME_SEARCH_SYSTEM()
 	end
 end
 coroutine.wrap(GAME_SEARCH_SYSTEM)()
+
+-- =========================================================
+-- DYNAMIC GAMES LIST GENERATOR
+-- Automatically loads all games from games_config.lua and
+-- creates their cards on the GAME tab in the Hub!
+-- =========================================================
+local function POPULATE_GAMES_SYSTEM()
+	local SoundService = game:GetService("SoundService")
+	local TeleportService = game:GetService("TeleportService")
+	local clickSound = SoundService:FindFirstChild("Click")
+	local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
+	local cacheBuster = "?t=" .. tostring(math.floor(tick()))
+
+	local defaultGames = {
+		{
+			Name = "Ride A Pet",
+			PlaceId = 124216119978534,
+			UniverseId = 10035204815,
+			Desc = "Auto Farm, Train, Ride & Mods",
+			Thumbnail = "rbxthumb://type=GameThumbnail&id=10035204815&w=768&h=432",
+			Script = "games/ride_a_pet.lua"
+		}
+	}
+
+	local gamesList = nil
+	local s, data = pcall(function()
+		return loadstring(game:HttpGet(baseUrl .. "games_config.lua" .. cacheBuster))()
+	end)
+	if s and type(data) == "table" then
+		gamesList = data
+	else
+		gamesList = defaultGames
+	end
+
+	if not GamesScroll then return end
+
+	for _, g in ipairs(gamesList) do
+		local card = Instance.new("Frame")
+		card.Name = g.Name .. "Card"
+		card.Parent = GamesScroll
+		card.BackgroundColor3 = Color3.fromRGB(24, 24, 28)
+		card.BorderSizePixel = 0
+		card.Size = UDim2.new(1, 0, 0, 72)
+		card:SetAttribute("PlaceId", g.PlaceId or 0)
+		card:SetAttribute("UniverseId", g.UniverseId or 0)
+
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = Color3.fromRGB(45, 48, 55)
+		stroke.Thickness = 1
+		stroke.Parent = card
+
+		local thumb = Instance.new("ImageLabel")
+		thumb.Name = "Thumbnail"
+		thumb.Parent = card
+		thumb.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+		thumb.BorderSizePixel = 0
+		thumb.Position = UDim2.new(0, 8, 0, 8)
+		thumb.Size = UDim2.new(0, 56, 0, 56)
+		thumb.ClipsDescendants = true
+		thumb.ScaleType = Enum.ScaleType.Crop
+		thumb.Image = g.Thumbnail or ("rbxthumb://type=GameThumbnail&id=" .. tostring(g.UniverseId or g.PlaceId or 0) .. "&w=768&h=432")
+
+		local thumbStroke = Instance.new("UIStroke")
+		thumbStroke.Color = Color3.fromRGB(45, 48, 55)
+		thumbStroke.Thickness = 1
+		thumbStroke.Parent = thumb
+
+		local title = Instance.new("TextLabel")
+		title.Name = "Title"
+		title.Parent = card
+		title.BackgroundTransparency = 1.000
+		title.Position = UDim2.new(0, 72, 0, 8)
+		title.Size = UDim2.new(0, 180, 0, 18)
+		title.Font = Enum.Font.GothamBold
+		title.Text = g.Name
+		title.TextColor3 = Color3.fromRGB(255, 255, 255)
+		title.TextSize = 14.000
+		title.TextXAlignment = Enum.TextXAlignment.Left
+
+		local desc = Instance.new("TextLabel")
+		desc.Name = "Desc"
+		desc.Parent = card
+		desc.BackgroundTransparency = 1.000
+		desc.Position = UDim2.new(0, 72, 0, 27)
+		desc.Size = UDim2.new(0, 180, 0, 14)
+		desc.Font = Enum.Font.Gotham
+		desc.Text = g.Desc or "Custom game script & mods"
+		desc.TextColor3 = Color3.fromRGB(150, 150, 160)
+		desc.TextSize = 10.000
+		desc.TextXAlignment = Enum.TextXAlignment.Left
+
+		local badge = Instance.new("TextLabel")
+		badge.Name = "Badge"
+		badge.Parent = card
+		badge.BackgroundTransparency = 1.000
+		badge.Position = UDim2.new(0, 72, 0, 45)
+		badge.Size = UDim2.new(0, 110, 0, 16)
+		badge.Font = Enum.Font.GothamBold
+		badge.Text = "🟢 SUPPORTED"
+		badge.TextColor3 = Color3.fromRGB(0, 255, 140)
+		badge.TextSize = 9.000
+		badge.TextXAlignment = Enum.TextXAlignment.Left
+
+		local btn = Instance.new("TextButton")
+		btn.Name = "LaunchBtn"
+		btn.Parent = card
+		btn.BackgroundColor3 = Color3.fromRGB(36, 38, 45)
+		btn.BorderSizePixel = 0
+		btn.Position = UDim2.new(1, -74, 0.5, -13)
+		btn.Size = UDim2.new(0, 66, 0, 26)
+		btn.Font = Enum.Font.GothamBold
+		btn.Text = "OPEN ❯"
+		btn.TextColor3 = Color3.fromRGB(240, 240, 245)
+		btn.TextSize = 10.000
+
+		local btnStroke = Instance.new("UIStroke")
+		btnStroke.Color = Color3.fromRGB(65, 70, 80)
+		btnStroke.Thickness = 1
+		btnStroke.Parent = btn
+
+		btn.MouseEnter:Connect(function()
+			btn.BackgroundColor3 = Color3.fromRGB(48, 52, 60)
+			btnStroke.Color = Color3.fromRGB(90, 95, 105)
+		end)
+		btn.MouseLeave:Connect(function()
+			btn.BackgroundColor3 = Color3.fromRGB(36, 38, 45)
+			btnStroke.Color = Color3.fromRGB(65, 70, 80)
+		end)
+
+		local cardClick = Instance.new("TextButton")
+		cardClick.Name = "CardClick"
+		cardClick.Parent = card
+		cardClick.BackgroundTransparency = 1.000
+		cardClick.Size = UDim2.new(1, -85, 1, 0)
+		cardClick.Text = ""
+		cardClick.ZIndex = 5
+
+		local function launchGame()
+			if clickSound then clickSound:Play() end
+			Main.Visible = false
+			_G.HubInFocus = false
+			shared.HubInFocus = false
+
+			-- If the player is currently in this game, run script directly
+			local isCurrentGame = (g.PlaceId and game.PlaceId == g.PlaceId) or (g.UniverseId and game.GameId == g.UniverseId)
+			if isCurrentGame or not g.PlaceId then
+				local scriptUrl = string.find(g.Script, "^https?://") and g.Script or (baseUrl .. g.Script)
+				loadstring(game:HttpGet(scriptUrl .. "?t=" .. tostring(tick())))()
+			else
+				-- If player is in a different game, teleport to the game
+				TeleportService:Teleport(g.PlaceId, localPlayer)
+			end
+		end
+
+		btn.MouseButton1Click:Connect(launchGame)
+		cardClick.MouseButton1Click:Connect(launchGame)
+	end
+end
+coroutine.wrap(POPULATE_GAMES_SYSTEM)()
