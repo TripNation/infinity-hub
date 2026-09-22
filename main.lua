@@ -1912,16 +1912,67 @@ task.spawn(function()
 		return nil
 	end
 
+	local function GetCurrentGameName()
+		local pId = tostring(game.PlaceId)
+		local uId = tostring(game.GameId)
+
+		-- Match PlaceId / UniverseId from games_config.lua
+		if pId == "124216119978534" or uId == "10035204815" then
+			return "Ride A Pet"
+		elseif pId == "131623223084840" or uId == "9363735110" then
+			return "Escape Tsunami For Brainrots"
+		end
+
+		-- Check if game script GUI is currently active
+		if _G.RideAPetGui or _G.RideAPetMainFrame then
+			return "Ride A Pet"
+		end
+		if _G.EscapeTsunamiGui or _G.EscapeTsunamiMainFrame then
+			return "Escape Tsunami For Brainrots"
+		end
+
+		-- Check GameName label inside Infinity Hub
+		if GameName and GameName.Text and GameName.Text ~= "" and GameName.Text ~= "Unknown Game" then
+			local gTxt = string.lower(GameName.Text)
+			if string.find(gTxt, "ride", 1, true) or string.find(gTxt, "pet", 1, true) then
+				return "Ride A Pet"
+			elseif string.find(gTxt, "tsunami", 1, true) or string.find(gTxt, "brainrot", 1, true) then
+				return "Escape Tsunami For Brainrots"
+			end
+			return GameName.Text
+		end
+
+		return "Hub"
+	end
+
 	local function ShouldShow(announcement)
 		if not announcement or not announcement.active then return false end
+
 		local target = string.lower(announcement.target or "everyone")
-		if (target == "module" or target == "specific module") and announcement.targetModule then
-			local req = string.lower(announcement.targetModule)
-			local cur = string.lower(AnnouncementConfig.CurrentModule or "")
-			if not string.find(cur, req, 1, true) then return false end
+		local targetMod = string.lower(announcement.targetModule or "")
+
+		-- 1. If target is "All" / "everyone" or targetModule is "all", show to the whole hub!
+		if target == "everyone" or targetMod == "" or targetMod == "all" or targetMod == "everyone" then
+			return true
 		end
-		return true
+
+		-- 2. Specific game selection
+		local currentGame = string.lower(GetCurrentGameName())
+
+		-- Ride A Pet check
+		if string.find(targetMod, "ride", 1, true) or string.find(targetMod, "pet", 1, true) then
+			return string.find(currentGame, "ride", 1, true) or string.find(currentGame, "pet", 1, true)
+		end
+
+		-- Escape Tsunami For Brainrots check
+		if string.find(targetMod, "tsunami", 1, true) or string.find(targetMod, "escape", 1, true) or string.find(targetMod, "brainrot", 1, true) then
+			return string.find(currentGame, "tsunami", 1, true) or string.find(currentGame, "brainrot", 1, true)
+		end
+
+		-- Custom game name match
+		return string.find(currentGame, targetMod, 1, true) ~= nil
 	end
+
 
 	local function DisplayAnnouncement(announcement)
 		if activeCard and activeCard.Parent then

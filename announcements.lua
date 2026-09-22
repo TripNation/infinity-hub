@@ -89,6 +89,26 @@ local function FetchLatestAnnouncement()
     return nil
 end
 
+local function GetCurrentGameName()
+    local pId = tostring(game.PlaceId)
+    local uId = tostring(game.GameId)
+
+    if pId == "124216119978534" or uId == "10035204815" then
+        return "Ride A Pet"
+    elseif pId == "131623223084840" or uId == "9363735110" then
+        return "Escape Tsunami For Brainrots"
+    end
+
+    if _G.RideAPetGui or _G.RideAPetMainFrame then
+        return "Ride A Pet"
+    end
+    if _G.EscapeTsunamiGui or _G.EscapeTsunamiMainFrame then
+        return "Escape Tsunami For Brainrots"
+    end
+
+    return "Hub"
+end
+
 -- Target filtering
 local function ShouldShowAnnouncement(announcement)
     if not announcement or not announcement.active then
@@ -96,36 +116,29 @@ local function ShouldShowAnnouncement(announcement)
     end
 
     local target = string.lower(announcement.target or "everyone")
+    local targetMod = string.lower(announcement.targetModule or "")
 
-    -- Module filtering
-    if (target == "module" or target == "specific module") and announcement.targetModule then
-        local reqMod = string.lower(announcement.targetModule)
-        local curMod = string.lower(InfinityConfig.CurrentModule or "")
-        if not string.find(curMod, reqMod, 1, true) then
-            return false
-        end
+    -- 1. All games / Everyone
+    if target == "everyone" or targetMod == "" or targetMod == "all" or targetMod == "everyone" then
+        return true
     end
 
-    -- Version filtering
-    if announcement.minimumHubVersion and announcement.minimumHubVersion ~= "" then
-        local function parseVersion(v)
-            local t = {}
-            for num in string.gmatch(v:gsub("[^0-9%.]", ""), "%d+") do
-                table.insert(t, tonumber(num) or 0)
-            end
-            while #t < 3 do table.insert(t, 0) end
-            return t
-        end
-        local cVer = parseVersion(InfinityConfig.HubVersion)
-        local mVer = parseVersion(announcement.minimumHubVersion)
-        for i = 1, 3 do
-            if cVer[i] > mVer[i] then break end
-            if cVer[i] < mVer[i] then return false end
-        end
+    -- 2. Specific game selection
+    local currentGame = string.lower(GetCurrentGameName())
+
+    -- Ride A Pet
+    if string.find(targetMod, "ride", 1, true) or string.find(targetMod, "pet", 1, true) then
+        return string.find(currentGame, "ride", 1, true) or string.find(currentGame, "pet", 1, true)
     end
 
-    return true
+    -- Escape Tsunami
+    if string.find(targetMod, "tsunami", 1, true) or string.find(targetMod, "escape", 1, true) or string.find(targetMod, "brainrot", 1, true) then
+        return string.find(currentGame, "tsunami", 1, true) or string.find(currentGame, "brainrot", 1, true)
+    end
+
+    return string.find(currentGame, targetMod, 1, true) ~= nil
 end
+
 
 -- Display animated announcement card matching reference design
 local function ShowAnnouncementNotification(announcement)
