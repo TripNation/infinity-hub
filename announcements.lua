@@ -1,8 +1,8 @@
 -- ==============================================================================
 -- INFINITY HUB // LIVE ANNOUNCEMENTS CLIENT MODULE
 -- ==============================================================================
--- Universal announcement listener for Infinity Hub, Loader, and Game scripts.
--- Polls the Infinity Hub admin API and displays animated live notifications.
+-- Self-contained live announcement listener for Infinity Hub.
+-- Automatically detects active game, polls the live backend, and renders notifications.
 -- ==============================================================================
 
 local HttpService = game:GetService("HttpService")
@@ -25,35 +25,30 @@ if not localPlayer then
     end)
 end
 
--- Unique session tracker so re-execution seamlessly replaces old loops
+-- Unique session tracker so re-execution cleanly replaces old loops
 local currentSession = tick()
 _G.InfinityAnnouncementsSession = currentSession
 
 local InfinityConfig = {
-    -- Endpoints to query: Render direct first (fastest/most reliable SSL in executors), then custom domain
     ApiUrls = {
         "https://infinity-admin-ynb5.onrender.com/api/announcements/latest",
         "https://www.infinityhub.space/api/announcements/latest",
         "https://infinityhub.space/api/announcements/latest",
-        "http://127.0.0.1:3000/api/announcements/latest",
-        "http://localhost:3000/api/announcements/latest"
+        "http://127.0.0.1:3000/api/announcements/latest"
     },
-    PollInterval = 5,
-    HubVersion = "2.1.0",
-    DebugMode = true
+    PollInterval = 4
 }
 
-local lastSeenAnnouncementId = nil
+local lastSeenFingerprint = nil
 local activePopup = nil
 local announcementsScreenGui = nil
 
--- Dedicated ScreenGui provider (Crucial: Frames MUST be inside a ScreenGui)
+-- Dedicated ScreenGui provider (Frames MUST be inside a ScreenGui to render in Roblox)
 local function GetAnnouncementGui()
     if announcementsScreenGui and announcementsScreenGui.Parent then
         return announcementsScreenGui
     end
 
-    -- Look for existing GUI to avoid duplicates
     local existing = nil
     pcall(function()
         if gethui then
@@ -109,44 +104,39 @@ local function GetAnnouncementGui()
     return gui
 end
 
--- Universal executor request helper
+-- Universal executor request helper: game:HttpGet first, executor request fallback
 local function FetchRaw(url)
-    -- 1. Try modern executor request API
+    -- 1. game:HttpGet (Standard, universal, always available in loaders)
+    local getOk, body = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if getOk and type(body) == "string" and body ~= "" and body ~= "null" then
+        return body
+    end
+
+    -- 2. Executor request fallback
     local reqFn = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
     if reqFn then
         local ok, res = pcall(function()
             return reqFn({
                 Url = url,
-                url = url,
                 Method = "GET",
-                method = "GET",
-                Headers = {
-                    ["Cache-Control"] = "no-cache",
-                    ["User-Agent"] = "InfinityHub-Roblox/2.1"
-                }
+                Headers = { ["Cache-Control"] = "no-cache" }
             })
         end)
         if ok and type(res) == "table" then
-            local body = res.Body or res.body
-            if body and body ~= "" and body ~= "null" then
-                return body
+            local b = res.Body or res.body
+            if type(b) == "string" and b ~= "" and b ~= "null" then
+                return b
             end
         end
     end
 
-    -- 2. Try game:HttpGet directly inside pcall
-    local getOk, body = pcall(function()
-        return game:HttpGet(url)
-    end)
-    if getOk and body and body ~= "" and body ~= "null" then
-        return body
-    end
-
-    -- 3. Try game:HttpGetAsync inside pcall
+    -- 3. game:HttpGetAsync fallback
     local asyncOk, asyncBody = pcall(function()
         return game:HttpGetAsync(url)
     end)
-    if asyncOk and asyncBody and asyncBody ~= "" and asyncBody ~= "null" then
+    if asyncOk and type(asyncBody) == "string" and asyncBody ~= "" and asyncBody ~= "null" then
         return asyncBody
     end
 
@@ -171,24 +161,52 @@ local function FetchLatestAnnouncement()
     return nil
 end
 
+-- Accurate game detection with MarketplaceService fallback
+local cachedGameName = nil
 local function GetCurrentGameName()
+    if cachedGameName then return cachedGameName end
+
     local pId = tostring(game.PlaceId or 0)
     local uId = tostring(game.GameId or 0)
 
+    -- 1. Known IDs from games_config.lua
     if pId == "124216119978534" or uId == "10035204815" then
-        return "Ride A Pet"
+        cachedGameName = "Ride A Pet"
+        return cachedGameName
     elseif pId == "131623223084840" or uId == "9363735110" then
-        return "Escape Tsunami For Brainrots"
+        cachedGameName = "Escape Tsunami For Brainrots"
+        return cachedGameName
     end
 
-    if _G.RideAPetGui or _G.RideAPetMainFrame then
-        return "Ride A Pet"
-    end
-    if _G.EscapeTsunamiGui or _G.EscapeTsunamiMainFrame then
-        return "Escape Tsunami For Brainrots"
-    end
+    -- 2. Active script GUIs
+    pcall(function()
+        if _G.RideAPetGui or _G.RideAPetMainFrame or (game:GetService("CoreGui"):FindFirstChild("RideAPetStandaloneGui")) then
+            cachedGameName = "Ride A Pet"
+        elseif _G.EscapeTsunamiGui or _G.EscapeTsunamiMainFrame or (game:GetService("CoreGui"):FindFirstChild("EscapeTsunamiGui")) then
+            cachedGameName = "Escape Tsunami For Brainrots"
+        end
+    end)
+    if cachedGameName then return cachedGameName end
 
-    return "Hub"
+    -- 3. MarketplaceService check for game title
+    pcall(function()
+        local info = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId)
+        if info and info.Name then
+            local n = string.lower(info.Name)
+            if string.find(n, "ride", 1, true) and string.find(n, "pet", 1, true) then
+                cachedGameName = "Ride A Pet"
+            elseif string.find(n, "tsunami", 1, true) or string.find(n, "brainrot", 1, true) then
+                cachedGameName = "Escape Tsunami For Brainrots"
+            else
+                cachedGameName = info.Name
+            end
+        end
+    end)
+
+    if not cachedGameName then
+        cachedGameName = "Hub"
+    end
+    return cachedGameName
 end
 
 -- Target filtering
@@ -200,7 +218,7 @@ local function ShouldShowAnnouncement(announcement)
     local target = string.lower(tostring(announcement.target or "everyone"))
     local targetMod = string.lower(tostring(announcement.targetModule or ""))
 
-    -- 1. All games / Everyone
+    -- 1. If targeted to everyone / all
     if target == "everyone" or targetMod == "" or targetMod == "all" or targetMod == "everyone" or targetMod == "null" then
         return true
     end
@@ -221,7 +239,7 @@ local function ShouldShowAnnouncement(announcement)
     return string.find(currentGame, targetMod, 1, true) ~= nil
 end
 
--- Display animated announcement card matching reference design
+-- Display animated announcement card
 local function ShowAnnouncementNotification(announcement)
     local screenGui = GetAnnouncementGui()
     if not screenGui then
@@ -239,7 +257,7 @@ local function ShowAnnouncementNotification(announcement)
     card.Name = "InfinityHub_LiveAnnouncement"
     card.AnchorPoint = Vector2.new(0.5, 0)
     card.Size = UDim2.new(0, 410, 0, 64)
-    card.Position = UDim2.new(0.5, 0, 0, -85)
+    card.Position = UDim2.new(0.5, 0, 0, -85) -- Start offscreen
     card.BackgroundColor3 = Color3.fromRGB(18, 19, 24)
     card.BorderSizePixel = 0
     card.ZIndex = 9999
@@ -255,7 +273,7 @@ local function ShowAnnouncementNotification(announcement)
     stroke.Color = Color3.fromRGB(45, 48, 58)
     stroke.Parent = card
 
-    -- Left White Rounded Square
+    -- Left White Rounded Square with Logo
     local logoHolder = Instance.new("Frame")
     logoHolder.Name = "LogoHolder"
     logoHolder.Size = UDim2.new(0, 38, 0, 38)
@@ -269,7 +287,6 @@ local function ShowAnnouncementNotification(announcement)
     holderCorner.CornerRadius = UDim.new(0, 8)
     holderCorner.Parent = logoHolder
 
-    -- Infinity Logo
     local infinityIcon = Instance.new("ImageLabel")
     infinityIcon.Name = "InfinityIcon"
     infinityIcon.Size = UDim2.new(0, 26, 0, 20)
@@ -323,13 +340,12 @@ local function ShowAnnouncementNotification(announcement)
     headerLabel.Parent = card
 
     -- Message Text
-    local msgText = tostring(announcement.message or "")
     local messageLabel = Instance.new("TextLabel")
     messageLabel.Name = "MessageLabel"
     messageLabel.Size = UDim2.new(1, -88, 0, 24)
     messageLabel.Position = UDim2.new(0, 58, 0, 29)
     messageLabel.BackgroundTransparency = 1
-    messageLabel.Text = msgText
+    messageLabel.Text = tostring(announcement.message or "")
     messageLabel.TextColor3 = Color3.fromRGB(220, 222, 230)
     messageLabel.Font = Enum.Font.GothamMedium
     messageLabel.TextSize = 12
@@ -396,38 +412,33 @@ local function ShowAnnouncementNotification(announcement)
 
     -- Auto dismiss timer with countdown
     local duration = tonumber(announcement.duration)
-    if duration == nil or duration > 0 then
-        local durSecs = (duration and duration > 0) and duration or 10
-        TweenService:Create(progressFill, TweenInfo.new(durSecs, Enum.EasingStyle.Linear), {
-            Size = UDim2.new(0, 0, 1, 0)
-        }):Play()
-        task.delay(durSecs, Dismiss)
-    end
+    local durSecs = (duration and duration > 0) and duration or 10
+    TweenService:Create(progressFill, TweenInfo.new(durSecs, Enum.EasingStyle.Linear), {
+        Size = UDim2.new(0, 0, 1, 0)
+    }):Play()
+    task.delay(durSecs, Dismiss)
 end
 
 -- Start background polling loop
 task.spawn(function()
-    print("[Infinity Hub] 📡 Live Announcement System Active")
-    
+    print("[Infinity Hub] 📡 Live Announcement System Active in " .. GetCurrentGameName())
+
     while _G.InfinityAnnouncementsSession == currentSession do
-        local ok, err = pcall(function()
+        pcall(function()
             local announcement = FetchLatestAnnouncement()
-            if announcement and announcement.id and announcement.active then
-                if announcement.id ~= lastSeenAnnouncementId then
+            if announcement and type(announcement) == "table" and announcement.active then
+                local fingerprint = tostring(announcement.id or "") .. "_" .. tostring(announcement.message or "") .. "_" .. tostring(announcement.createdAt or "")
+                if fingerprint ~= lastSeenFingerprint then
+                    lastSeenFingerprint = fingerprint
                     if ShouldShowAnnouncement(announcement) then
-                        lastSeenAnnouncementId = announcement.id
-                        print(string.format("[Infinity Hub] 📢 Showing Announcement #%d: '%s'", announcement.id, tostring(announcement.message or "")))
+                        print(string.format("[Infinity Hub] 📢 Showing Announcement #%s to %s: '%s'", tostring(announcement.id), GetCurrentGameName(), tostring(announcement.message or "")))
                         ShowAnnouncementNotification(announcement)
                     else
-                        lastSeenAnnouncementId = announcement.id
+                        print(string.format("[Infinity Hub] ℹ️ Skipping Announcement #%s (targeted to '%s', currently in '%s')", tostring(announcement.id), tostring(announcement.targetModule or announcement.target), GetCurrentGameName()))
                     end
                 end
             end
         end)
-        
-        if not ok and InfinityConfig.DebugMode then
-            warn("[Infinity Hub Announcements Error] " .. tostring(err))
-        end
 
         task.wait(InfinityConfig.PollInterval)
     end
@@ -435,5 +446,7 @@ end)
 
 return {
     FetchLatestAnnouncement = FetchLatestAnnouncement,
-    ShowAnnouncementNotification = ShowAnnouncementNotification
+    ShowAnnouncementNotification = ShowAnnouncementNotification,
+    GetCurrentGameName = GetCurrentGameName,
+    ShouldShowAnnouncement = ShouldShowAnnouncement
 }
