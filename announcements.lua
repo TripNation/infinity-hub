@@ -12,17 +12,19 @@ local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 
 local InfinityConfig = {
-    -- Primary and fallback URLs (supports 127.0.0.1, localhost, and local IP)
+    -- Primary and fallback URLs
     ApiUrls = {
+        "https://www.infinityhub.space/api/announcements/latest",
+        "https://infinityhub.space/api/announcements/latest",
         "http://127.0.0.1:3000/api/announcements/latest",
-        "http://localhost:3000/api/announcements/latest",
-        "http://10.0.0.6:3000/api/announcements/latest"
+        "http://localhost:3000/api/announcements/latest"
     },
-    PollInterval = 5, -- check every 5 seconds for responsive testing
+    PollInterval = 10,
     HubVersion = "2.1.0",
     CurrentModule = "Ride A Pet",
     DebugMode = true
 }
+
 
 local lastSeenAnnouncementId = nil
 local activePopup = nil

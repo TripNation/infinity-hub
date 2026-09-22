@@ -1850,14 +1850,16 @@ print("✅ [Infinity Hub] Loaded successfully!")
 task.spawn(function()
 	local AnnouncementConfig = {
 		ApiUrls = {
+			"https://www.infinityhub.space/api/announcements/latest",
+			"https://infinityhub.space/api/announcements/latest",
 			"http://127.0.0.1:3000/api/announcements/latest",
-			"http://localhost:3000/api/announcements/latest",
-			"http://10.0.0.6:3000/api/announcements/latest"
+			"http://localhost:3000/api/announcements/latest"
 		},
-		PollInterval = 5,
+		PollInterval = 10,
 		HubVersion = "2.1.0",
 		CurrentModule = "Ride A Pet"
 	}
+
 
 	local lastSeenId = nil
 	local activeCard = nil
