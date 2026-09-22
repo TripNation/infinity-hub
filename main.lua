@@ -2073,11 +2073,9 @@ task.spawn(function()
 		headerLbl.ZIndex = 10000
 		headerLbl.Parent = card
 
-		-- Bottom Message: Announcement message
+		-- Bottom Message: Only the clean announcement message (no game name prefix)
 		local msgText = tostring(announcement.message or "")
-		if announcement.title and announcement.title ~= "" and announcement.title ~= "Infinity Hub" and announcement.title ~= "Infinity Announcements" and announcement.title ~= headerText then
-			msgText = announcement.title .. ": " .. msgText
-		end
+
 
 		local msgLbl = Instance.new("TextLabel")
 		msgLbl.Name = "Message"

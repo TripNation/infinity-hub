@@ -4,14 +4,20 @@
 
 local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
 
--- Convert to strings immediately to avoid large-number float precision bugs
-local currentPlaceId = tostring(game.PlaceId)
-local currentGameId  = tostring(game.GameId)
+-- Ensure PlaceId and GameId are loaded
+local waitStart = tick()
+while (not game.PlaceId or game.PlaceId == 0) and (tick() - waitStart < 3) do
+    task.wait(0.1)
+end
 
-print("[Infinity Hub] PlaceId=" .. currentPlaceId .. " | UniverseId=" .. currentGameId)
+local currentPlaceId = tostring(game.PlaceId or 0)
+local currentGameId  = tostring(game.GameId or 0)
+
+print(string.format("[Infinity Hub Loader] Detected PlaceId: %s | UniverseId: %s", currentPlaceId, currentGameId))
 
 -- =========================================================
--- Hardcoded fallback table (used if config fetch fails)
+-- Hardcoded Fallback Registry
+-- Guarantees instant matching even if GitHub CDN is stale
 -- =========================================================
 local fallbackGames = {
     ["124216119978534"] = "games/ride_a_pet.lua",
@@ -21,9 +27,14 @@ local fallbackGames = {
 }
 
 -- =========================================================
--- Try to fetch the live games_config.lua from GitHub
+-- Fetch latest games_config.lua from GitHub
 -- =========================================================
 local supportedGames = {}
+
+-- Pre-populate with fallback so supported games always resolve
+for k, v in pairs(fallbackGames) do
+    supportedGames[k] = v
+end
 
 local ok, result = pcall(function()
     local code = game:HttpGet(baseUrl .. "games_config.lua")
@@ -40,33 +51,30 @@ if ok and type(result) == "table" then
             supportedGames[tostring(g.UniverseId)] = g.Script
         end
     end
-    print("[Infinity Hub] Config loaded — " .. #result .. " game(s) registered.")
+    print("[Infinity Hub Loader] Config loaded successfully with " .. #result .. " game(s).")
 else
-    warn("[Infinity Hub] Config fetch failed. Reason: " .. tostring(result))
-    warn("[Infinity Hub] Using hardcoded fallback table instead.")
-    supportedGames = fallbackGames
-end
-
--- Debug: show every registered game key
-for k, v in pairs(supportedGames) do
-    print("[Infinity Hub] Registered: " .. k .. " -> " .. v)
+    warn("[Infinity Hub Loader] Config fetch failed or returned non-table. Using built-in fallback registry.")
 end
 
 -- =========================================================
--- Route to the correct script
+-- Route to appropriate script
 -- =========================================================
-local gameScript = supportedGames[currentPlaceId] or supportedGames[currentGameId]
+local gameScript = supportedGames[currentPlaceId] 
+    or supportedGames[currentGameId] 
+    or fallbackGames[currentPlaceId] 
+    or fallbackGames[currentGameId]
 
 if gameScript then
-    print("[Infinity Hub] MATCH FOUND! Injecting: " .. gameScript)
+    print("[Infinity Hub Loader] ✅ Supported game found! Injecting: " .. gameScript)
     local loadOk, loadErr = pcall(function()
         loadstring(game:HttpGet(baseUrl .. gameScript))()
     end)
     if not loadOk then
-        warn("[Infinity Hub] Script error: " .. tostring(loadErr))
+        warn("[Infinity Hub Loader] Error running game script: " .. tostring(loadErr))
+        warn("[Infinity Hub Loader] Falling back to default hub...")
         loadstring(game:HttpGet(baseUrl .. "main.lua"))()
     end
 else
-    print("[Infinity Hub] No match for this game. Opening default hub.")
+    print("[Infinity Hub Loader] ℹ️ Game is unsupported (" .. currentPlaceId .. "). Launching Infinity Hub...")
     loadstring(game:HttpGet(baseUrl .. "main.lua"))()
 end
