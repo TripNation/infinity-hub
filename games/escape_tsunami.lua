@@ -17,13 +17,11 @@ local HttpService = game:GetService("HttpService")
 
 -- Live Announcements System
 pcall(function()
-    if not _G.InfinityAnnouncementsActive then
-        task.spawn(function()
-            pcall(function()
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/TripNation/infinity-hub/main/announcements.lua"))()
-            end)
+    task.spawn(function()
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/TripNation/infinity-hub/main/announcements.lua?_t=" .. tostring(math.floor(tick()))))()
         end)
-    end
+    end)
 end)
 
 -- 2. Local Player Resolution (Non-blocking & foolproof)

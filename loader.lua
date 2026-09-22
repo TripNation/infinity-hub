@@ -20,7 +20,7 @@ print(string.format("[Infinity Hub Loader] Detected PlaceId: %s | UniverseId: %s
 -- =========================================================
 task.spawn(function()
     pcall(function()
-        loadstring(game:HttpGet(baseUrl .. "announcements.lua"))()
+        loadstring(game:HttpGet(baseUrl .. "announcements.lua?_t=" .. tostring(math.floor(tick()))))()
     end)
 end)
 
