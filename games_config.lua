@@ -15,6 +15,15 @@ return {
         Script = "games/ride_a_pet.lua"
     },
     
+    {
+        Name = "Escape Tsunami For Brainrots",
+        PlaceId = 131623223084840,
+        UniverseId = 9363735110,
+        Desc = "Anti-Wave, Auto Farm, Brainrot Grabber",
+        Thumbnail = "rbxthumb://type=GameThumbnail&id=9363735110&w=768&h=432",
+        Script = "games/escape_tsunami.lua"
+    },
+
     -- Example for how to add your next game:
     -- {
     --     Name = "Prison Life",
