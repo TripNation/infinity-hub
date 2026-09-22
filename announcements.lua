@@ -143,33 +143,6 @@ local function FetchRaw(url)
     return nil
 end
 
--- Send execution telemetry ping on script injection
-task.spawn(function()
-    pcall(function()
-        local cid = tostring((localPlayer and localPlayer.UserId) or tick())
-        FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping?init=1&src=roblox&cid=" .. cid)
-    end)
-end)
-
--- Fetch latest announcement trying fallback endpoints
-local function FetchLatestAnnouncement()
-    local timestamp = tostring(math.floor(tick() * 1000))
-    local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
-    for _, baseUrl in ipairs(InfinityConfig.ApiUrls) do
-        local url = baseUrl .. "?_t=" .. timestamp .. "&src=roblox&cid=" .. clientId
-        local raw = FetchRaw(url)
-        if raw then
-            local decodeOk, data = pcall(function()
-                return HttpService:JSONDecode(raw)
-            end)
-            if decodeOk and type(data) == "table" and data.id and data.active then
-                return data
-            end
-        end
-    end
-    return nil
-end
-
 -- Accurate game detection with MarketplaceService fallback
 local cachedGameName = nil
 local function GetCurrentGameName()
@@ -216,6 +189,73 @@ local function GetCurrentGameName()
         cachedGameName = "Hub"
     end
     return cachedGameName
+end
+
+local function UrlEncode(str)
+    if not str then return "" end
+    local ok, res = pcall(function() return HttpService:UrlEncode(tostring(str)) end)
+    if ok and res then return res end
+    return tostring(str):gsub("\n", "\r\n"):gsub("([^%w %-%_%.%~])", function(c)
+        return string.format("%%%02X", string.byte(c))
+    end):gsub(" ", "+")
+end
+
+local function GetClientParams(extra)
+    local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
+    local playerName = (localPlayer and (localPlayer.DisplayName or localPlayer.Name)) or "RobloxPlayer"
+    local gameName = GetCurrentGameName()
+    local str = "src=roblox&cid=" .. UrlEncode(clientId) .. "&user=" .. UrlEncode(playerName) .. "&game=" .. UrlEncode(gameName)
+    if extra and extra ~= "" then
+        str = str .. "&" .. extra
+    end
+    return str
+end
+
+-- Gracefully cleanup any previous session & register exit handler
+if _G.InfinityHubLeaveHook then
+    pcall(_G.InfinityHubLeaveHook)
+end
+_G.InfinityHubLeaveHook = function()
+    local clientId = tostring((localPlayer and localPlayer.UserId) or tick())
+    local leaveQ = "?leave=1&src=roblox&cid=" .. UrlEncode(clientId)
+    pcall(function() FetchRaw("https://www.infinityhub.space/api/stats/ping" .. leaveQ) end)
+    pcall(function() FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping" .. leaveQ) end)
+end
+
+pcall(function()
+    game:BindToClose(function()
+        if _G.InfinityHubLeaveHook then
+            pcall(_G.InfinityHubLeaveHook)
+        end
+    end)
+end)
+
+-- Send execution telemetry ping on script injection
+task.spawn(function()
+    pcall(function()
+        local q = "?" .. GetClientParams("init=1")
+        FetchRaw("https://www.infinityhub.space/api/stats/ping" .. q)
+        FetchRaw("https://infinity-admin-ynb5.onrender.com/api/stats/ping" .. q)
+    end)
+end)
+
+-- Fetch latest announcement trying fallback endpoints
+local function FetchLatestAnnouncement()
+    local timestamp = tostring(math.floor(tick() * 1000))
+    local clientQuery = "?" .. GetClientParams("_t=" .. timestamp)
+    for _, baseUrl in ipairs(InfinityConfig.ApiUrls) do
+        local url = baseUrl .. clientQuery
+        local raw = FetchRaw(url)
+        if raw then
+            local decodeOk, data = pcall(function()
+                return HttpService:JSONDecode(raw)
+            end)
+            if decodeOk and type(data) == "table" and data.id and data.active then
+                return data
+            end
+        end
+    end
+    return nil
 end
 
 -- Target filtering
