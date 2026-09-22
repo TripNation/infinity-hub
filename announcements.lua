@@ -478,22 +478,72 @@ end
 
 -- Start background polling loop
 task.spawn(function()
+    _G.InfinitySeenAnnouncements = _G.InfinitySeenAnnouncements or {}
+    local seenAnnouncements = _G.InfinitySeenAnnouncements
+
+    -- Load seen announcements from executor disk if available
+    pcall(function()
+        if readfile and isfile and isfile("infinity_seen_announcements.json") then
+            local raw = readfile("infinity_seen_announcements.json")
+            local list = HttpService:JSONDecode(raw)
+            if type(list) == "table" then
+                for _, id in ipairs(list) do
+                    seenAnnouncements[tostring(id)] = true
+                end
+            end
+        end
+    end)
+
+    local function SaveSeenAnnouncement(id)
+        local strId = tostring(id or "")
+        if strId == "" then return end
+        seenAnnouncements[strId] = true
+        pcall(function()
+            if writefile then
+                local list = {}
+                for k, _ in pairs(seenAnnouncements) do
+                    table.insert(list, k)
+                end
+                writefile("infinity_seen_announcements.json", HttpService:JSONEncode(list))
+            end
+        end)
+    end
+
     print("[Infinity Hub] 📡 Live Announcement System Active in " .. GetCurrentGameName())
+
+    local isInitialCheck = true
 
     while _G.InfinityAnnouncementsSession == currentSession do
         pcall(function()
             local announcement = FetchLatestAnnouncement()
             if announcement and type(announcement) == "table" and announcement.active then
-                local fingerprint = tostring(announcement.id or "") .. "_" .. tostring(announcement.message or "") .. "_" .. tostring(announcement.createdAt or "")
-                if fingerprint ~= lastSeenFingerprint then
+                local annId = tostring(announcement.id or "")
+                local fingerprint = annId .. "_" .. tostring(announcement.message or "")
+
+                -- On the very first check upon injecting, any existing announcement was created in the past.
+                -- Mark it as seen immediately so it NEVER plays on injection!
+                if isInitialCheck then
+                    isInitialCheck = false
                     lastSeenFingerprint = fingerprint
+                    SaveSeenAnnouncement(annId)
+                    print(string.format("[Infinity Hub] ℹ️ Ignored past announcement #%s on injection", annId))
+                    return
+                end
+
+                -- Only display if never seen before in this or any previous session
+                if not seenAnnouncements[annId] and fingerprint ~= lastSeenFingerprint then
+                    lastSeenFingerprint = fingerprint
+                    SaveSeenAnnouncement(annId)
+
                     if ShouldShowAnnouncement(announcement) then
-                        print(string.format("[Infinity Hub] 📢 Showing Announcement #%s to %s: '%s'", tostring(announcement.id), GetCurrentGameName(), tostring(announcement.message or "")))
+                        print(string.format("[Infinity Hub] 📢 Showing Announcement #%s to %s: '%s'", annId, GetCurrentGameName(), tostring(announcement.message or "")))
                         ShowAnnouncementNotification(announcement)
                     else
-                        print(string.format("[Infinity Hub] ℹ️ Skipping Announcement #%s (targeted to '%s', currently in '%s')", tostring(announcement.id), tostring(announcement.targetModule or announcement.target), GetCurrentGameName()))
+                        print(string.format("[Infinity Hub] ℹ️ Skipping Announcement #%s (targeted to '%s', currently in '%s')", annId, tostring(announcement.targetModule or announcement.target), GetCurrentGameName()))
                     end
                 end
+            else
+                isInitialCheck = false
             end
         end)
 
