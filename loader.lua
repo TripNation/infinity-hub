@@ -4,37 +4,48 @@
 
 local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
 
--- Mapping of PlaceId or GameId to the script path or raw URL
--- When you want to support a game, put its ID here!
+-- Supported Games Table
+-- Maps PlaceId OR GameId (UniverseId) to the script path
 local supportedGames = {
+    -- Ride A Pet (Place ID and Universe ID)
     [124216119978534] = "games/ride_a_pet.lua",
-    -- [PlaceId or GameId] = "games/your_script.lua",
+    [10035204815] = "games/ride_a_pet.lua",
+    ["124216119978534"] = "games/ride_a_pet.lua",
+    ["10035204815"] = "games/ride_a_pet.lua",
 }
 
 local placeId = game.PlaceId
 local gameId = game.GameId
 
--- Check if the current game is in the supported list
-local gameScript = supportedGames[placeId] or supportedGames[gameId]
+-- Check both PlaceId and Universe/GameId as number and string
+local gameScript = supportedGames[placeId] 
+    or supportedGames[tostring(placeId)] 
+    or supportedGames[gameId] 
+    or supportedGames[tostring(gameId)]
+
+-- Timestamp to bypass GitHub CDN cache
+local cacheBuster = "?t=" .. tostring(math.floor(tick()))
 
 if gameScript then
     -- =========================================================
-    -- SUPPORTED GAME: Only load the game script, NEVER the hub
+    -- SUPPORTED GAME: Strictly only launch the game script
     -- =========================================================
-    print(string.format("[Infinity Hub] Supported game detected (ID: %s)! Launching game script...", tostring(placeId)))
+    print(string.format("[Infinity Hub] Supported game detected! PlaceId: %s | UniverseId: %s", tostring(placeId), tostring(gameId)))
     
     local url = string.find(gameScript, "^https?://") and gameScript or (baseUrl .. gameScript)
+    url = url .. cacheBuster
+
     local success, err = pcall(function()
         loadstring(game:HttpGet(url))()
     end)
     
     if not success then
-        warn(string.format("[Infinity Hub] Error running script for game %s: %s", tostring(placeId), tostring(err)))
+        warn(string.format("[Infinity Hub] Failed to run %s: %s", tostring(gameScript), tostring(err)))
     end
 else
     -- =========================================================
-    -- UNSUPPORTED GAME: Fall back and open the default Hub
+    -- UNSUPPORTED GAME: Open the default Infinity Hub
     -- =========================================================
-    print(string.format("[Infinity Hub] Game ID %s is not in supported list. Opening default Hub...", tostring(placeId)))
-    loadstring(game:HttpGet(baseUrl .. "main.lua"))()
+    print(string.format("[Infinity Hub] Unsupported game. PlaceId: %s | UniverseId: %s. Opening Hub...", tostring(placeId), tostring(gameId)))
+    loadstring(game:HttpGet(baseUrl .. "main.lua" .. cacheBuster))()
 end
