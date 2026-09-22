@@ -4,11 +4,15 @@
 
 local baseUrl = "https://raw.githubusercontent.com/TripNation/infinity-hub/main/"
 
--- Always use string comparisons for PlaceIds to avoid large-number precision issues
+-- Convert to strings immediately to avoid large-number float precision bugs
 local currentPlaceId = tostring(game.PlaceId)
 local currentGameId  = tostring(game.GameId)
 
--- Hardcoded fallback in case config fetch fails
+print("[Infinity Hub] PlaceId=" .. currentPlaceId .. " | UniverseId=" .. currentGameId)
+
+-- =========================================================
+-- Hardcoded fallback table (used if config fetch fails)
+-- =========================================================
 local fallbackGames = {
     ["124216119978534"] = "games/ride_a_pet.lua",
     ["10035204815"]     = "games/ride_a_pet.lua",
@@ -17,16 +21,18 @@ local fallbackGames = {
 }
 
 -- =========================================================
--- Fetch games_config.lua (no cache buster - CDN caches by
--- path only; query strings don't help with Fastly)
+-- Try to fetch the live games_config.lua from GitHub
 -- =========================================================
 local supportedGames = {}
-local configOk, configData = pcall(function()
-    return loadstring(game:HttpGet(baseUrl .. "games_config.lua"))()\
+
+local ok, result = pcall(function()
+    local code = game:HttpGet(baseUrl .. "games_config.lua")
+    local fn = loadstring(code)
+    return fn()
 end)
 
-if configOk and type(configData) == "table" then
-    for _, g in ipairs(configData) do
+if ok and type(result) == "table" then
+    for _, g in ipairs(result) do
         if g.PlaceId then
             supportedGames[tostring(g.PlaceId)] = g.Script
         end
@@ -34,38 +40,33 @@ if configOk and type(configData) == "table" then
             supportedGames[tostring(g.UniverseId)] = g.Script
         end
     end
-    print("[Infinity Hub] Loaded " .. tostring(#configData) .. " game(s) from games_config.lua")
+    print("[Infinity Hub] Config loaded — " .. #result .. " game(s) registered.")
 else
-    warn("[Infinity Hub] Could not fetch games_config.lua, using fallback list.")
+    warn("[Infinity Hub] Config fetch failed. Reason: " .. tostring(result))
+    warn("[Infinity Hub] Using hardcoded fallback table instead.")
     supportedGames = fallbackGames
 end
 
--- Debug: print what game we detected
-print(string.format("[Infinity Hub] Detected PlaceId=%s | UniverseId=%s", currentPlaceId, currentGameId))
+-- Debug: show every registered game key
+for k, v in pairs(supportedGames) do
+    print("[Infinity Hub] Registered: " .. k .. " -> " .. v)
+end
 
 -- =========================================================
--- Look up the current game
+-- Route to the correct script
 -- =========================================================
 local gameScript = supportedGames[currentPlaceId] or supportedGames[currentGameId]
 
 if gameScript then
-    -- -------------------------------------------------------
-    -- SUPPORTED GAME → run the game-specific script
-    -- -------------------------------------------------------
-    print("[Infinity Hub] Supported game! Injecting: " .. gameScript)
-    local url = baseUrl .. gameScript
-    local ok, err = pcall(function()
-        loadstring(game:HttpGet(url))()
+    print("[Infinity Hub] MATCH FOUND! Injecting: " .. gameScript)
+    local loadOk, loadErr = pcall(function()
+        loadstring(game:HttpGet(baseUrl .. gameScript))()
     end)
-    if not ok then
-        warn("[Infinity Hub] Failed to run " .. gameScript .. ": " .. tostring(err))
-        -- Fallback to hub so user isn't left with nothing
+    if not loadOk then
+        warn("[Infinity Hub] Script error: " .. tostring(loadErr))
         loadstring(game:HttpGet(baseUrl .. "main.lua"))()
     end
 else
-    -- -------------------------------------------------------
-    -- UNSUPPORTED GAME → open default Infinity Hub
-    -- -------------------------------------------------------
-    print("[Infinity Hub] Unsupported game. Opening default hub...")
+    print("[Infinity Hub] No match for this game. Opening default hub.")
     loadstring(game:HttpGet(baseUrl .. "main.lua"))()
 end
